@@ -10,7 +10,7 @@
 
 ## 🚀 Overview
 
-FastCodeGen is a powerful IntelliJ IDEA plugin that accelerates Kotlin development by automatically generating boilerplate code for common architectural patterns. Perfect for developers working with MVVM, Clean Architecture, and Repository patterns in Kotlin projects.
+FastCodeGen is a powerful IntelliJ IDEA plugin that accelerates Kotlin development by automatically generating boilerplate code for common architectural patterns. Perfect for developers working with MVI, Clean Architecture, and Repository patterns in Kotlin projects.
 
 ## ✨ What's New in 1.0.6
 
