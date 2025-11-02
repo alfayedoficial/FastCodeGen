@@ -1,0 +1,217 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
+    <id>com.alfayedoficial.FastCodeGen</id>
+
+    <!-- Public plugin name should be written in Title Case.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
+    <name>FastCodeGen</name>
+
+    <!-- Version -->
+    <version>1.0.0</version>
+
+    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <vendor email="alialfayed.official@gmail.com" url="https://www.linkedin.com/in/alfayedoficial/">Ali Al-Shahat Ali</vendor>
+
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
+    <description><![CDATA[
+    <h2>FastCodeGen - Kotlin Code Generator Plugin</h2>
+
+    <p>
+    <strong>FastCodeGen</strong> is a powerful IntelliJ IDEA plugin that accelerates Kotlin development by automatically generating
+    boilerplate code for common architectural patterns. Perfect for developers working with MVVM, Clean Architecture,
+    and Repository patterns in Kotlin projects.
+    </p>
+
+    <h3>✨ Features</h3>
+    <ul>
+      <li><strong>ViewModel State Generator</strong> - Generate complete ViewModel with State, Event, UIState, and Intent patterns</li>
+      <li><strong>Repository Generator</strong> - Create repository interfaces and implementations with customizable methods</li>
+      <li><strong>Full Feature Generator</strong> - Generate complete feature with ViewModel and Repository in one go</li>
+      <li><strong>Smart Package Detection</strong> - Automatically detects and uses correct package structure</li>
+      <li><strong>Customizable Configuration</strong> - Toggle Events, Refresh, UIState, and HttpClient options</li>
+    </ul>
+
+    <h3>🚀 How to Use</h3>
+    <ol>
+      <li>Right-click on any package/folder in your Kotlin project</li>
+      <li>Select <strong>New → FastCodeGen</strong></li>
+      <li>Choose your generation type:
+        <ul>
+          <li><strong>ViewmodelState</strong> - Generate only ViewModel State files</li>
+          <li><strong>Repo</strong> - Generate only Repository files</li>
+          <li><strong>Feature</strong> - Generate complete feature (ViewModel + Repository)</li>
+        </ul>
+      </li>
+      <li>Configure your options and click Submit</li>
+    </ol>
+
+    <h3>📋 Requirements</h3>
+    <ul>
+      <li>IntelliJ IDEA 2024.2 or later</li>
+      <li>Kotlin plugin enabled</li>
+      <li>Kotlin project with standard source structure</li>
+    </ul>
+
+    <h3>🎯 What Gets Generated</h3>
+    <h4>ViewModel State:</h4>
+    <ul>
+      <li>State sealed class (Idle, Loading, Success, Error)</li>
+      <li>Event sealed class (optional)</li>
+      <li>UIState data class (optional, with Refreshable support)</li>
+      <li>Intent sealed class</li>
+      <li>ViewModel class with proper configuration</li>
+    </ul>
+
+    <h4>Repository:</h4>
+    <ul>
+      <li>Repository interface with custom methods</li>
+      <li>Repository implementation with HttpClient support (optional)</li>
+      <li>Flow-based async operations</li>
+    </ul>
+
+    <h3>💡 Example Usage</h3>
+    <p>Generate a complete feature for a "Login" screen with authentication repository and state management in seconds!</p>
+
+    <h3>🔗 Links</h3>
+    <ul>
+      <li><a href="https://www.linkedin.com/in/alfayedoficial/">Developer LinkedIn</a></li>
+      <li><a href="https://github.com/alfayedoficial">GitHub Profile</a></li>
+    </ul>
+
+    <p><em>Made with ❤️ by Ali Al-Shahat Ali</em></p>
+  ]]></description>
+
+    <!-- Change notes -->
+    <change-notes><![CDATA[
+    <h3>Version 1.0.0</h3>
+    <ul>
+      <li>Initial release</li>
+      <li>ViewModel State generation with configurable options</li>
+      <li>Repository generation with custom methods</li>
+      <li>Full Feature generation (ViewModel + Repository)</li>
+      <li>Smart package detection and folder structure creation</li>
+      <li>Support for Events, Refresh, UIState, and HttpClient</li>
+    </ul>
+  ]]></change-notes>
+
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends optional="true" config-file="k2-compatibility.xml">org.jetbrains.kotlin</depends>
+
+    <!-- Extension points defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Show welcome dialog on first startup -->
+        <postStartupActivity implementation="com.alfayedoficial.fastcodegen.startup.WelcomeStartupActivity"/>
+    </extensions>
+
+    <actions>
+        <!-- Main FastCodeGen Action - appears in New menu -->
+        <action id="com.alfayedoficial.FastCodeGen.GenerateCode"
+                class="com.alfayedoficial.fastcodegen.action.FastCodeGenAction"
+                text="FastCodeGen"
+                description="Generate Kotlin code (ViewModel, Repository, or Full Feature)"
+                icon="AllIcons.Actions.Lightning">
+            <!-- Add to New menu (when right-clicking in project view) -->
+            <add-to-group group-id="NewGroup" anchor="first"/>
+            <!-- Add to context menu in project view -->
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
+            <!-- Add to editor context menu as well -->
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+            <!-- Add to main menu for easy access -->
+            <add-to-group group-id="CodeMenu" anchor="last"/>
+        </action>
+
+        <!-- Separate New submenu entry -->
+        <group id="com.alfayedoficial.FastCodeGen.NewGroup"
+               text="FastCodeGen"
+               description="FastCodeGen code generators"
+               icon="AllIcons.Actions.Lightning"
+               popup="true">
+            <add-to-group group-id="NewGroup" anchor="first"/>
+
+            <action id="com.alfayedoficial.FastCodeGen.GenerateCode.Alt"
+                    class="com.alfayedoficial.fastcodegen.action.FastCodeGenAction"
+                    text="Generate Code..."
+                    description="Generate Kotlin code (ViewModel, Repository, or Full Feature)"
+                    icon="AllIcons.Actions.Lightning"/>
+        </group>
+
+        <!-- Welcome action in Help menu -->
+        <action id="com.alfayedoficial.FastCodeGen.HelpWelcome"
+                class="com.alfayedoficial.fastcodegen.action.ShowWelcomeAction"
+                text="FastCodeGen - Getting Started"
+                description="Show FastCodeGen welcome and quick start guide"
+                icon="AllIcons.General.Information">
+            <add-to-group group-id="HelpMenu" anchor="after" relative-to-action="Help.KeymapReference"/>
+        </action>
+
+        <!-- Documentation Menu Group -->
+        <group id="com.alfayedoficial.FastCodeGen.DocsMenu"
+               text="FastCodeGen Documentation"
+               description="View FastCodeGen documentation"
+               popup="true"
+               icon="AllIcons.Actions.Help">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+
+            <action id="com.alfayedoficial.FastCodeGen.ShowWelcome"
+                    class="com.alfayedoficial.fastcodegen.action.ShowWelcomeAction"
+                    text="Welcome to FastCodeGen"
+                    description="Show welcome screen"
+                    icon="AllIcons.General.Information">
+                <override-text place="MainMenu" text="🚀 Welcome &amp; Quick Start"/>
+            </action>
+
+            <separator/>
+
+            <action id="com.alfayedoficial.FastCodeGen.ViewReadme"
+                    class="com.alfayedoficial.fastcodegen.action.ViewDocumentationAction"
+                    text="View README"
+                    description="View main documentation">
+                <override-text place="MainMenu" text="📖 README - Getting Started"/>
+            </action>
+
+            <action id="com.alfayedoficial.FastCodeGen.ViewUserGuide"
+                    class="com.alfayedoficial.fastcodegen.action.ViewDocumentationAction"
+                    text="View User Guide"
+                    description="View detailed usage guide">
+                <override-text place="MainMenu" text="📚 User Guide - Tutorials"/>
+            </action>
+
+            <action id="com.alfayedoficial.FastCodeGen.ViewQuickRef"
+                    class="com.alfayedoficial.fastcodegen.action.ViewDocumentationAction"
+                    text="View Quick Reference"
+                    description="View quick reference">
+                <override-text place="MainMenu" text="⚡ Quick Reference"/>
+            </action>
+
+            <separator/>
+
+            <action id="com.alfayedoficial.FastCodeGen.ViewImplementation"
+                    class="com.alfayedoficial.fastcodegen.action.ViewDocumentationAction"
+                    text="View Implementation Steps"
+                    description="View implementation guide">
+                <override-text place="MainMenu" text="🔧 Implementation Steps"/>
+            </action>
+
+            <action id="com.alfayedoficial.FastCodeGen.ViewPluginSummary"
+                    class="com.alfayedoficial.fastcodegen.action.ViewDocumentationAction"
+                    text="View Plugin Summary"
+                    description="View plugin overview">
+                <override-text place="MainMenu" text="📊 Plugin Summary"/>
+            </action>
+
+            <separator/>
+
+            <action id="com.alfayedoficial.FastCodeGen.ViewIndex"
+                    class="com.alfayedoficial.fastcodegen.action.ViewDocumentationAction"
+                    text="View Complete Index"
+                    description="View all documentation index">
+                <override-text place="MainMenu" text="📑 Complete Index"/>
+            </action>
+        </group>
+    </actions>
+</idea-plugin>

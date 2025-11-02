@@ -1,0 +1,4 @@
+<idea-plugin>
+    <!-- Mark plugin as compatible with the Kotlin plugin in K2 mode -->
+    <depends>org.jetbrains.kotlin</depends>
+</idea-plugin>
