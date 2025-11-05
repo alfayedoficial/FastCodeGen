@@ -1,318 +1,627 @@
-# FastCodeGen - Documentation Index
+# FastCodeGen Documentation Index
 
-**Version:** 1.0.6  
-**Last Updated:** November 2, 2025
-
-Complete index of all FastCodeGen documentation.
+**Version 1.0.6 - Complete Documentation Navigator**
 
 ---
 
-## 📚 Main Documentation
+## 📚 Documentation Overview
 
-### [README.md](README.md)
-**Start Here!**
-- Plugin overview
-- What's new in 1.0.6
-- Features list
-- Quick start guide
-- Installation instructions
-- Basic usage
+This index provides quick access to all FastCodeGen documentation. Choose the guide that best fits your needs:
 
-**Best for:** First-time users, overview
-
----
-
-### [USER_GUIDE.md](USER_GUIDE.md)
-**Complete Tutorial**
-- Getting started
-- Settings configuration
-- Generating code (step-by-step)
-- Advanced features
-- Best practices
-- Troubleshooting
-
-**Best for:** Learning the plugin, detailed tutorials
+| Document | Best For | Time to Read |
+|----------|----------|--------------|
+| [README](#readme) | First-time users, overview | 10 min |
+| [User Guide](#user-guide) | Detailed tutorials, examples | 30 min |
+| [Quick Reference](#quick-reference) | Quick lookup, cheat sheet | 5 min |
+| [Implementation Steps](#implementation-steps) | Initial setup | 20 min |
+| [Plugin Summary](#plugin-summary) | Feature overview | 10 min |
+| [Files to Download](#files-to-download) | Required files list | 2 min |
 
 ---
 
-### [QUICK_REFERENCE.md](QUICK_REFERENCE.md)
-**Cheat Sheet**
-- Quick start commands
-- Settings overview
-- Generation types
-- Configuration options
-- Code templates
-- Keyboard shortcuts
+## 📖 README
 
-**Best for:** Daily use, quick lookup
+**File:** `README.md`
+
+**Purpose:** Complete overview of FastCodeGen with features, installation, and quick start.
+
+### Contents
+1. What's New in 1.0.6
+2. Features Overview
+3. Quick Start Guide
+4. Installation Instructions
+5. Usage Examples
+6. Requirements
+7. Settings Configuration
+8. Code Examples
+9. Benefits
+10. Troubleshooting
+11. Changelog
+
+### Key Sections
+
+#### Getting Started
+- Installation from marketplace
+- First-time setup
+- Configuration
+
+#### Features
+- Screen Generation (NEW!)
+- ViewModel Generation
+- Repository Generation
+- Full Feature Generation
+
+#### Configuration
+- Required base classes
+- Navigation utilities
+- Optional settings
+
+**[View README →](README.md)**
 
 ---
 
-### [IMPLEMENTATION_STEPS.md](IMPLEMENTATION_STEPS.md)
-**Setup Guide**
-- Prerequisites
-- Installation process
-- Initial setup
-- Project configuration
-- First generation
-- Team onboarding
+## 📚 User Guide
 
-**Best for:** Setting up, team deployment
+**File:** `USER_GUIDE.md`
+
+**Purpose:** Comprehensive tutorials with step-by-step examples for all features.
+
+### Contents
+1. Getting Started
+2. Initial Setup
+3. Screen Generation
+4. ViewModel Generation
+5. Repository Generation
+6. Full Feature Generation
+7. Advanced Examples
+8. Best Practices
+9. Troubleshooting
+
+### Detailed Topics
+
+#### Screen Generation
+- Basic screen without navigation
+- Screen with simple navigation
+- Screen with type-safe navigation
+- Screen with ViewModel integration
+
+#### ViewModel Generation
+- Basic ViewModel
+- ViewModel with all features
+- Event handling
+- Refresh support
+- UIState management
+- Load method usage
+
+#### Repository Generation
+- Basic repository
+- Repository with custom methods
+- Repository without HttpClient
+- Method definition patterns
+
+#### Full Feature
+- Complete feature generation
+- Feature with Screen and ViewModel
+- Feature with ViewModel and Repository
+- Selective component generation
+
+#### Advanced Examples
+- E-Commerce product listing
+- User authentication flow
+- Settings screen
+- Data synchronization
+
+#### Best Practices
+- Naming conventions
+- When to enable features
+- Repository method design
+- Project structure
+- Settings configuration tips
+
+**[View User Guide →](USER_GUIDE.md)**
 
 ---
 
-### [PLUGIN_SUMMARY.md](PLUGIN_SUMMARY.md)
-**Feature Overview**
-- Key features
-- Capabilities
-- Technical specifications
-- Comparisons
-- Version history
-- Roadmap
+## ⚡ Quick Reference
 
-**Best for:** Decision makers, feature exploration
+**File:** `QUICK_REFERENCE.md`
+
+**Purpose:** Fast lookup guide and cheat sheet for experienced users.
+
+### Contents
+1. Quick Start
+2. Generation Types
+3. Settings (Required Paths)
+4. Screen Generation Options
+5. ViewModel Configuration
+6. Repository Configuration
+7. Full Feature Combinations
+8. Generated File Structure
+9. Common Use Cases
+10. Keyboard Shortcuts
+11. Pro Tips
+12. Quick Troubleshooting
+
+### Quick Lookup Tables
+
+#### Navigation Types
+- None, Simple, Type-Safe comparison
+- When to use each type
+- Parameter requirements
+
+#### ViewModel Options
+- Enable Events usage
+- Enable Refresh usage
+- Enable UIState usage
+- Include Load Method usage
+
+#### Repository Methods
+- Method definition format
+- Common CRUD operations
+- Search/Filter patterns
+
+#### Common Scenarios
+- Login screen configuration
+- Profile detail configuration
+- Settings screen configuration
+- Data sync service configuration
+- Product list configuration
+
+**[View Quick Reference →](QUICK_REFERENCE.md)**
 
 ---
 
-## 🎯 Quick Access by Topic
+## 🔧 Implementation Steps
 
-### Installation
-- [README - Installation](README.md#installation)
-- [Implementation Steps - Installation](IMPLEMENTATION_STEPS.md#2-installation)
+**File:** `IMPLEMENTATION_STEPS.md`
 
-### Settings
-- [README - Settings Configuration](README.md#settings-configuration)
-- [User Guide - Settings Configuration](USER_GUIDE.md#settings-configuration)
-- [Implementation Steps - Initial Setup](IMPLEMENTATION_STEPS.md#3-initial-setup)
-- [Quick Reference - Settings](QUICK_REFERENCE.md#️-settings-new-in-106)
+**Purpose:** Complete setup guide from scratch to first code generation.
 
-### Code Generation
-- [README - How to Use](README.md#how-to-use)
-- [User Guide - Generating Code](USER_GUIDE.md#generating-code)
-- [Quick Reference - Generation Types](QUICK_REFERENCE.md#-generation-types)
+### Contents
+1. Prerequisites
+2. Project Setup
+3. Base Classes Implementation
+4. Navigation Utilities Setup
+5. Plugin Configuration
+6. Dependency Injection Setup
+7. First Code Generation
+8. Verification
+
+### Step-by-Step Guides
+
+#### Prerequisites
+- IDE requirements
+- Project requirements
+- Optional dependencies
+
+#### Project Setup
+- Add required dependencies
+- Create package structure
+- Configure Gradle
+
+#### Base Classes
+- Base interfaces implementation
+- ViewModel configuration
+- App ViewModel implementation
+- Complete code examples
+
+#### Navigation Utilities
+- Simple navigation setup
+- Type-safe navigation setup
+- Complete navigation example
+
+#### Plugin Configuration
+- Install plugin
+- Configure settings
+- Verify configuration
+
+#### Dependency Injection
+- Koin setup (complete example)
+- Hilt setup (complete example)
+- Module creation
+
+#### Testing
+- Test ViewModel generation
+- Test Screen generation
+- Test Full Feature generation
+
+**[View Implementation Steps →](IMPLEMENTATION_STEPS.md)**
+
+---
+
+## 📊 Plugin Summary
+
+**File:** `PLUGIN_SUMMARY.md`
+
+**Purpose:** High-level overview of all plugin capabilities and features.
+
+### Contents
+1. Overview
+2. Core Capabilities
+3. Feature Matrix
+4. Technical Details
+5. Supported Technologies
+6. Configuration Requirements
+7. Usage Workflow
+8. Benefits
+9. Metrics
+10. Version History
+11. Platform Support
+12. Limitations
+13. Roadmap
+
+### Key Information
+
+#### Feature Matrix
+- Screen generation features
+- ViewModel generation features
+- Repository generation features
+- Full feature capabilities
+
+#### Architecture Support
+- Clean architecture structure
+- MVI pattern
+- State management
+
+#### Code Quality
+- Type-safe
+- Null-safe
+- Coroutine-ready
+- Documented
+
+#### Metrics
+- Code reduction statistics
+- Time savings analysis
+- Consistency improvements
+
+**[View Plugin Summary →](PLUGIN_SUMMARY.md)**
+
+---
+
+## 📁 Files to Download
+
+**File:** `FILES_TO_DOWNLOAD.md`
+
+**Purpose:** List of required and optional files for plugin setup.
+
+### Contents
+1. Required Base Classes
+2. Optional Utilities
+3. Example Implementations
+4. Dependency Files
+
+**[View Files to Download →](FILES_TO_DOWNLOAD.md)**
+
+---
+
+## 🎯 Quick Navigation by Task
+
+### I want to...
+
+#### Get Started
+- **Install the plugin** → [README - Installation](#readme)
+- **Set up for first time** → [Implementation Steps](#implementation-steps)
+- **Understand features** → [Plugin Summary](#plugin-summary)
+
+#### Learn How To Use
+- **Generate a screen** → [User Guide - Screen Generation](#user-guide)
+- **Generate a ViewModel** → [User Guide - ViewModel Generation](#user-guide)
+- **Generate a repository** → [User Guide - Repository Generation](#user-guide)
+- **Generate complete feature** → [User Guide - Full Feature](#user-guide)
+
+#### Quick Lookup
+- **Check syntax** → [Quick Reference](#quick-reference)
+- **Find example** → [User Guide - Advanced Examples](#user-guide)
+- **See configuration options** → [Quick Reference - Tables](#quick-reference)
+
+#### Troubleshoot
+- **Settings issues** → [README - Troubleshooting](#readme)
+- **Generation errors** → [User Guide - Troubleshooting](#user-guide)
+- **Quick fixes** → [Quick Reference - Troubleshooting](#quick-reference)
+
+#### Advanced Topics
+- **Best practices** → [User Guide - Best Practices](#user-guide)
+- **Custom setup** → [Implementation Steps](#implementation-steps)
+- **Architecture details** → [Plugin Summary - Technical Details](#plugin-summary)
+
+---
+
+## 📑 Document Relationships
+
+```
+README
+  ├─→ Quick Start
+  ├─→ Installation
+  └─→ Overview
+      │
+      ├─→ User Guide (Detailed Tutorials)
+      │   ├─→ Screen Generation
+      │   ├─→ ViewModel Generation
+      │   ├─→ Repository Generation
+      │   ├─→ Full Feature Generation
+      │   └─→ Advanced Examples
+      │
+      ├─→ Quick Reference (Cheat Sheet)
+      │   ├─→ Syntax
+      │   ├─→ Options
+      │   └─→ Common Patterns
+      │
+      ├─→ Implementation Steps (Setup)
+      │   ├─→ Prerequisites
+      │   ├─→ Base Classes
+      │   ├─→ Configuration
+      │   └─→ Verification
+      │
+      └─→ Plugin Summary (Overview)
+          ├─→ Features
+          ├─→ Architecture
+          ├─→ Metrics
+          └─→ Roadmap
+```
+
+---
+
+## 🔍 Search by Topic
+
+### Screen Generation
+- [README - Screen Generation](#readme)
+- [User Guide - Screen Generation](#user-guide)
+- [Quick Reference - Screen Options](#quick-reference)
+- [Implementation Steps - Navigation Setup](#implementation-steps)
+
+### ViewModel Generation
+- [README - ViewModel Features](#readme)
+- [User Guide - ViewModel Generation](#user-guide)
+- [Quick Reference - ViewModel Configuration](#quick-reference)
+- [Implementation Steps - Base ViewModel](#implementation-steps)
+
+### Repository Generation
+- [README - Repository Features](#readme)
+- [User Guide - Repository Generation](#user-guide)
+- [Quick Reference - Repository Configuration](#quick-reference)
+
+### Navigation
+- [User Guide - Navigation Types](#user-guide)
+- [Quick Reference - Navigation Types](#quick-reference)
+- [Implementation Steps - Navigation Utilities](#implementation-steps)
+
+### Configuration
+- [README - Settings Configuration](#readme)
+- [Quick Reference - Settings Paths](#quick-reference)
+- [Implementation Steps - Plugin Configuration](#implementation-steps)
 
 ### Troubleshooting
-- [User Guide - Troubleshooting](USER_GUIDE.md#troubleshooting)
-- [Implementation Steps - Troubleshooting](IMPLEMENTATION_STEPS.md#-troubleshooting)
-- [Quick Reference - Quick Troubleshooting](QUICK_REFERENCE.md#-quick-troubleshooting)
-
-### Examples
-- [README - Example Usage](README.md#example-usage)
-- [User Guide - Examples](USER_GUIDE.md#examples)
-- [Quick Reference - Code Templates](QUICK_REFERENCE.md#-code-templates)
+- [README - Troubleshooting](#readme)
+- [User Guide - Troubleshooting](#user-guide)
+- [Quick Reference - Quick Troubleshooting](#quick-reference)
 
 ---
 
-## 🔍 Search by Keyword
+## 📊 Documentation by Experience Level
 
-### A
-- **Actions/Intents** → [Quick Reference - Intent Template](QUICK_REFERENCE.md#intent)
-- **Advanced Features** → [User Guide - Advanced Features](USER_GUIDE.md#advanced-features)
-- **API** → [Plugin Summary - Technical Specifications](PLUGIN_SUMMARY.md#-technical-specifications)
+### 🟢 Beginner
+**Start Here:**
+1. [README](#readme) - Understand what FastCodeGen is
+2. [Implementation Steps](#implementation-steps) - Set up from scratch
+3. [User Guide - Getting Started](#user-guide) - Learn basics
+4. [Quick Reference](#quick-reference) - Keep handy for lookups
 
-### B
-- **Base Classes** → [Implementation Steps - Project Configuration](IMPLEMENTATION_STEPS.md#4-project-configuration)
-- **Best Practices** → [User Guide - Best Practices](USER_GUIDE.md#best-practices)
-- **Browse Button** → [User Guide - Settings Configuration](USER_GUIDE.md#configuring-base-classes)
+**Recommended Path:**
+```
+README → Implementation Steps → User Guide (Getting Started) → Generate First Feature
+```
 
-### C
-- **Changelog** → [README - Changelog](README.md#changelog)
-- **Configuration** → [Quick Reference - Configuration Options](QUICK_REFERENCE.md#-configuration-options)
-- **Custom Methods** → [User Guide - Repository Methods](USER_GUIDE.md#repository-methods-optional)
+### 🟡 Intermediate
+**Focus On:**
+1. [User Guide - Advanced Examples](#user-guide) - Real-world scenarios
+2. [Quick Reference](#quick-reference) - Common patterns
+3. [User Guide - Best Practices](#user-guide) - Improve quality
 
-### D
-- **Documentation** → This file!
-- **Dynamic Imports** → [README - What's New](README.md#whats-new-in-106)
+**Recommended Path:**
+```
+User Guide (Advanced) → Best Practices → Quick Reference (Patterns)
+```
 
-### E
-- **Events** → [Quick Reference - Event Template](QUICK_REFERENCE.md#event)
-- **Examples** → [User Guide - Examples](USER_GUIDE.md#examples)
-- **Error Messages** → [User Guide - Troubleshooting](USER_GUIDE.md#troubleshooting)
+### 🔴 Advanced
+**Dive Into:**
+1. [Plugin Summary](#plugin-summary) - Full capabilities
+2. [Implementation Steps - Custom Setup](#implementation-steps) - Advanced configuration
+3. [User Guide - Best Practices](#user-guide) - Optimization
 
-### F
-- **Features** → [README - Features](README.md#features)
-- **First Time Setup** → [README - First Time Setup](README.md#first-time-setup)
-- **Full Feature** → [Quick Reference - Full Feature](QUICK_REFERENCE.md#full-feature)
-
-### G
-- **Getting Started** → [README](README.md)
-- **Generation Types** → [Quick Reference - Generation Types](QUICK_REFERENCE.md#-generation-types)
-
-### H
-- **Help** → All documentation files
-- **HTTP Client** → [User Guide - HTTP Client](USER_GUIDE.md#repository-methods-optional)
-
-### I
-- **Installation** → [README - Installation](README.md#installation)
-- **Imports** → [README - Dynamic Imports](README.md#whats-new-in-106)
-- **Integration** → [Implementation Steps - Integration](IMPLEMENTATION_STEPS.md#6-integration)
-
-### K
-- **K2 Compiler** → [README - Requirements](README.md#requirements)
-- **Keyboard Shortcuts** → [Quick Reference - Keyboard Shortcuts](QUICK_REFERENCE.md#️-keyboard-shortcuts)
-- **Koin** → [User Guide - Koin Module](USER_GUIDE.md#optional-koin-module)
-
-### M
-- **Methods** → [User Guide - Repository Methods](USER_GUIDE.md#repository-methods-optional)
-- **MVVM** → [README - Overview](README.md#overview)
-
-### O
-- **Optional Methods** → [README - What's New](README.md#whats-new-in-106)
-- **Overview** → [README - Overview](README.md#overview)
-
-### P
-- **Prerequisites** → [Implementation Steps - Prerequisites](IMPLEMENTATION_STEPS.md#1-prerequisites)
-- **Project Configuration** → [Implementation Steps - Project Configuration](IMPLEMENTATION_STEPS.md#4-project-configuration)
-
-### Q
-- **Quick Reference** → [QUICK_REFERENCE.md](QUICK_REFERENCE.md)
-- **Quick Start** → [README - How to Use](README.md#how-to-use)
-
-### R
-- **Refactoring** → [README - What's New](README.md#whats-new-in-106)
-- **Repository** → [Quick Reference - Repository](QUICK_REFERENCE.md#repository)
-- **Requirements** → [README - Requirements](README.md#requirements)
-
-### S
-- **Settings** → [User Guide - Settings Configuration](USER_GUIDE.md#settings-configuration)
-- **State** → [Quick Reference - State Template](QUICK_REFERENCE.md#state)
-- **Summary** → [PLUGIN_SUMMARY.md](PLUGIN_SUMMARY.md)
-
-### T
-- **Team Onboarding** → [Implementation Steps - Team Onboarding](IMPLEMENTATION_STEPS.md#7-team-onboarding)
-- **Templates** → [Quick Reference - Code Templates](QUICK_REFERENCE.md#-code-templates)
-- **Troubleshooting** → [User Guide - Troubleshooting](USER_GUIDE.md#troubleshooting)
-
-### U
-- **UIState** → [Quick Reference - UIState Template](QUICK_REFERENCE.md#uistate)
-- **Use Cases** → [User Guide - Multiple Use Cases](USER_GUIDE.md#multiple-use-cases)
-- **User Guide** → [USER_GUIDE.md](USER_GUIDE.md)
-
-### V
-- **ViewModel** → [Quick Reference - ViewModel Template](QUICK_REFERENCE.md#viewmodel)
-- **Version History** → [README - Changelog](README.md#changelog)
+**Recommended Path:**
+```
+Plugin Summary → Custom Implementation → Team Standards
+```
 
 ---
 
-## 📖 Reading Path
+## 🎓 Learning Paths
 
-### For New Users
-1. [README.md](README.md) - Overview
-2. [IMPLEMENTATION_STEPS.md](IMPLEMENTATION_STEPS.md) - Setup
-3. [USER_GUIDE.md](USER_GUIDE.md) - Learn features
-4. [QUICK_REFERENCE.md](QUICK_REFERENCE.md) - Daily reference
+### Path 1: Quick Start (30 minutes)
+```
+1. README (10 min)
+   - Install plugin
+   - Understand features
 
-### For Team Leaders
-1. [PLUGIN_SUMMARY.md](PLUGIN_SUMMARY.md) - Understand value
-2. [README.md](README.md) - Features overview
-3. [IMPLEMENTATION_STEPS.md](IMPLEMENTATION_STEPS.md) - Deployment
-4. [USER_GUIDE.md](USER_GUIDE.md) - Team training
+2. Implementation Steps (15 min)
+   - Configure settings
+   - Set up base classes
+
+3. First Generation (5 min)
+   - Generate test feature
+   - Verify output
+```
+
+### Path 2: Complete Mastery (2 hours)
+```
+1. README (15 min)
+   - Full overview
+
+2. Implementation Steps (30 min)
+   - Complete setup
+   - Dependency injection
+
+3. User Guide (45 min)
+   - All generation types
+   - Advanced examples
+   - Best practices
+
+4. Quick Reference (15 min)
+   - Patterns and syntax
+   - Pro tips
+
+5. Plugin Summary (15 min)
+   - Architecture details
+   - Future roadmap
+```
+
+### Path 3: Team Onboarding (1 hour)
+```
+1. README - Quick Start (10 min)
+
+2. Implementation Steps (20 min)
+   - Walk through setup
+   - Configure together
+
+3. User Guide - Common Scenarios (20 min)
+   - Real project examples
+
+4. Quick Reference (10 min)
+   - Distribute as reference
+```
+
+---
+
+## 📱 Access Documentation
+
+### From IDE
+1. **Help Menu**: FastCodeGen dialog → 📚 Help button
+2. **Tools Menu**: Tools → FastCodeGen Documentation
+3. **Context Menu**: Right-click → Documentation submenu
+
+### From Project
+- All documentation files are in your FastCodeGen plugin installation
+- Access via Help menu for formatted viewing
+
+### Online
+- GitHub Repository: github.com/alfayedoficial/FastCodeGen
+- Plugin Marketplace: JetBrains Plugin Portal
+
+---
+
+## 🔄 Updates and Changes
+
+### Version 1.0.6 (Current)
+**New Documentation:**
+- Enhanced screen generation guide
+- Type-safe navigation examples
+- Include Load Method documentation
+- Updated configuration guide
+
+**Updated Sections:**
+- Settings configuration
+- Generated code examples
+- Troubleshooting guides
+- Best practices
+
+### Checking for Updates
+- IDE: Settings → Plugins → Check for Updates
+- Manual: Visit GitHub releases
+- Notification: IDE will notify when update available
+
+---
+
+## 💡 Tips for Using Documentation
+
+### For Beginners
+1. Start with README for overview
+2. Follow Implementation Steps exactly
+3. Use User Guide for learning
+4. Keep Quick Reference handy
 
 ### For Experienced Users
-1. [QUICK_REFERENCE.md](QUICK_REFERENCE.md) - Quick lookup
-2. [USER_GUIDE.md](USER_GUIDE.md) - Advanced features
-3. [README.md](README.md) - What's new
+1. Jump to Quick Reference for syntax
+2. Check User Guide for specific examples
+3. Refer to Plugin Summary for capabilities
+4. Revisit Implementation Steps for advanced setup
+
+### For Teams
+1. Share README as introduction
+2. Use Implementation Steps for team setup
+3. Distribute Quick Reference as cheat sheet
+4. Review Best Practices together
 
 ---
 
-## 🆕 What's New in 1.0.6
+## 🔗 External Resources
 
-### New Features Documented
-- **Settings System** - All docs updated
-- **Browse Buttons** - Setup guides enhanced
-- **Dynamic Imports** - Technical details added
-- **Optional Methods** - Examples provided
-- **Refactored UI** - Benefits explained
+### Official Links
+- **GitHub**: github.com/alfayedoficial
+- **Email**: alialfayed.official@gmail.com
+- **LinkedIn**: linkedin.com/in/alfayedoficial
 
-### New Sections
-- Settings Configuration (all docs)
-- Browse Functionality (User Guide, Implementation Steps)
-- Version 1.0.6 highlights (all docs)
-- Updated troubleshooting (all docs)
+### Related Documentation
+- Kotlin Documentation: kotlinlang.org/docs
+- Jetpack Compose: developer.android.com/jetpack/compose
+- Android Architecture: developer.android.com/topic/architecture
+- Coroutines: kotlinlang.org/docs/coroutines-guide.html
 
 ---
 
-## 📞 Support & Contact
+## 📝 Document Versions
 
-### Get Help
-Choose the right resource:
-
-| Question Type | Resource |
-|---------------|----------|
-| "How do I..." | [User Guide](USER_GUIDE.md) |
-| "Quick lookup" | [Quick Reference](QUICK_REFERENCE.md) |
-| "Getting started" | [README](README.md) |
-| "Setup help" | [Implementation Steps](IMPLEMENTATION_STEPS.md) |
-| "Feature details" | [Plugin Summary](PLUGIN_SUMMARY.md) |
-
-### Contact
-- **Email:** alialfayed.official@gmail.com
-- **LinkedIn:** [alfayedoficial](https://www.linkedin.com/in/alfayedoficial/)
-- **GitHub:** [alfayedoficial](https://github.com/alfayedoficial)
+| Document | Version | Last Updated |
+|----------|---------|--------------|
+| README | 1.0.6 | November 2025 |
+| User Guide | 1.0.6 | November 2025 |
+| Quick Reference | 1.0.6 | November 2025 |
+| Implementation Steps | 1.0.6 | November 2025 |
+| Plugin Summary | 1.0.6 | November 2025 |
+| Files to Download | 1.0.6 | November 2025 |
+| Index | 1.0.6 | November 2025 |
 
 ---
 
-## ✅ Documentation Checklist
+## 📞 Getting Help
 
-Use this to verify you've read relevant docs:
+### Documentation Not Clear?
+- Check other documents for same topic
+- Look for examples in User Guide
+- Review Implementation Steps
 
-### First Time User
-- [ ] Read README overview
-- [ ] Follow Installation steps
-- [ ] Configure Settings
-- [ ] Generate test feature
-- [ ] Check User Guide for details
+### Still Stuck?
+- Email: alialfayed.official@gmail.com
+- GitHub: Open an issue
+- LinkedIn: Direct message
 
-### Returning User
-- [ ] Check What's New
-- [ ] Review Quick Reference
-- [ ] Update Settings if needed
-- [ ] Check new features
-
-### Team Leader
-- [ ] Read Plugin Summary
-- [ ] Review Implementation Steps
-- [ ] Plan team training
-- [ ] Document team settings
-- [ ] Schedule rollout
+### Want to Contribute?
+- Suggest documentation improvements
+- Share examples
+- Report unclear sections
 
 ---
 
-## 📊 Documentation Statistics
+## 🎯 Next Steps
 
-| Document | Size | Reading Time | Level |
-|----------|------|--------------|-------|
-| README | ~4 pages | 5 min | Beginner |
-| User Guide | ~12 pages | 20 min | Intermediate |
-| Quick Reference | ~4 pages | 5 min | All |
-| Implementation Steps | ~10 pages | 15 min | Intermediate |
-| Plugin Summary | ~8 pages | 12 min | Advanced |
-| **Total** | **~38 pages** | **~1 hour** | **All** |
+Based on your needs, here's where to go:
 
----
+**New User?**
+→ [README](#readme) → [Implementation Steps](#implementation-steps)
 
-## 🎯 Quick Links
+**Need Examples?**
+→ [User Guide](#user-guide) → Advanced Examples Section
 
-### External Resources
-- [JetBrains Marketplace](https://plugins.jetbrains.com/)
-- [Kotlin Documentation](https://kotlinlang.org/docs/home.html)
-- [Android Developers](https://developer.android.com/)
+**Quick Syntax Check?**
+→ [Quick Reference](#quick-reference)
 
-### Plugin Pages
-- README - [View](README.md)
-- User Guide - [View](USER_GUIDE.md)
-- Quick Reference - [View](QUICK_REFERENCE.md)
-- Implementation Steps - [View](IMPLEMENTATION_STEPS.md)
-- Plugin Summary - [View](PLUGIN_SUMMARY.md)
+**Want Full Details?**
+→ [Plugin Summary](#plugin-summary)
+
+**Setting Up Team?**
+→ [Implementation Steps](#implementation-steps) → Share [Quick Reference](#quick-reference)
 
 ---
 
-<div align="center">
+**Happy Coding with FastCodeGen! 🚀**
 
-**FastCodeGen v1.0.6**
-
-*Complete documentation for professional Kotlin development*
-
-**Made with ❤️ by Ali Al-Shahat Ali**
-
-</div>
+*For the latest updates and information, visit our [GitHub Repository](https://github.com/alfayedoficial/FastCodeGen)*

@@ -1,487 +1,973 @@
-# FastCodeGen - User Guide
+# FastCodeGen User Guide
 
-**Version:** 1.0.6  
-**Last Updated:** November 2, 2025
+**Version 1.0.6 - Complete Tutorial and Examples**
+
+---
 
 ## Table of Contents
 
 1. [Getting Started](#getting-started)
-2. [Settings Configuration](#settings-configuration)
-3. [Generating Code](#generating-code)
-4. [Advanced Features](#advanced-features)
-5. [Best Practices](#best-practices)
-6. [Troubleshooting](#troubleshooting)
+2. [Initial Setup](#initial-setup)
+3. [Screen Generation](#screen-generation)
+4. [ViewModel Generation](#viewmodel-generation)
+5. [Repository Generation](#repository-generation)
+6. [Full Feature Generation](#full-feature-generation)
+7. [Advanced Examples](#advanced-examples)
+8. [Best Practices](#best-practices)
+9. [Troubleshooting](#troubleshooting)
 
 ---
 
 ## Getting Started
 
+### Prerequisites
+
+Before using FastCodeGen, ensure you have:
+- IntelliJ IDEA 2024.2+ or Android Studio Koala+
+- Kotlin plugin enabled
+- A Kotlin project with standard source structure
+- Base ViewModel, State, and Intent classes in your project
+- (Optional) Jetpack Compose for screen generation
+
 ### Installation
 
-1. Open your IDE (IntelliJ IDEA or Android Studio)
-2. Go to **Settings/Preferences** → **Plugins**
-3. Search for **"FastCodeGen"**
-4. Click **Install**
-5. Restart your IDE
-
-### First Launch
-
-When you first use FastCodeGen, you'll see a welcome dialog. This dialog introduces you to the key features and directs you to this user guide.
+1. Open **Settings → Plugins → Marketplace**
+2. Search for **"FastCodeGen"**
+3. Click **Install** and restart IDE
 
 ---
 
-## Settings Configuration
+## Initial Setup
 
-### Why Settings Matter
+### Step 1: Create Base Classes
 
-FastCodeGen needs to know the paths to your base classes to generate code that compiles correctly in your project. This is what makes version 1.0.6 so powerful - it adapts to **your** project structure!
+First, ensure you have the required base classes in your project. Here's a minimal example structure:
 
-### Opening Settings
+```kotlin
+// AppViewModel.kt
+abstract class AppViewModel<STATE : BaseState, EVENT : BaseEvent, UISTATE : BaseUIState, INTENT : BaseIntent>(
+    initialState: STATE,
+    initialUIState: UISTATE,
+    config: ViewModelConfig
+) : ViewModel() {
+    abstract fun handleIntent(intent: INTENT)
+    abstract fun createErrorState(message: String): STATE
+    abstract fun createErrorEvent(message: String): EVENT
+    
+    protected fun launch(block: suspend () -> Unit) { /* ... */ }
+    protected fun setState(state: STATE) { /* ... */ }
+    protected fun refreshRequest(block: () -> Unit) { /* ... */ }
+}
 
-**Method 1: From Dialog**
-1. Right-click on a package
+// ViewModelConfig.kt
+data class ViewModelConfig(
+    val enableRefresh: Boolean = false,
+    val enableEvents: Boolean = false
+)
+
+// Base interfaces
+interface BaseState
+interface BaseEvent
+interface BaseUIState
+interface BaseIntent
+interface Refreshable {
+    fun withRefresh(isRefresh: Boolean): BaseUIState
+}
+
+// NoEvent for when events are disabled
+object NoEvent : BaseEvent
+```
+
+### Step 2: Configure Plugin Settings
+
+1. Right-click on any package
 2. Select **New → FastCodeGen**
-3. Click the **⚙️** button (top-right corner)
+3. Click the **⚙️ Settings** button
+4. Configure each path:
+   - Click **📁** next to each field
+   - Browse to your base class file
+   - Plugin auto-detects the package path
+   - Repeat for all required fields
 
-**Method 2: From Menu**
-1. Go to **Tools** → **FastCodeGen Documentation**
-2. Select **Settings**
-
-### Configuring Base Classes
-
-For each required field:
-
-1. **Click the 📁 browse button**
-2. Navigate to your base class file
-3. Select the file (e.g., `AppViewModel.kt`)
-4. The plugin automatically detects the full package path
-5. Repeat for all required fields
-
-#### Required Settings
-
-| Setting | Example Path | Purpose |
-|---------|-------------|---------|
-| **AppViewModel** | `com.myapp.core.viewmodel.AppViewModel` | Base ViewModel class |
-| **ViewModelConfig** | `com.myapp.core.viewmodel.ViewModelConfig` | ViewModel configuration |
-| **BaseState** | `com.myapp.core.viewmodel.BaseState` | State interface |
-| **BaseEvent** | `com.myapp.core.viewmodel.BaseEvent` | Event interface |
-| **BaseUIState** | `com.myapp.core.viewmodel.BaseUIState` | UI state interface |
-| **Refreshable** | `com.myapp.core.viewmodel.Refreshable` | Refresh interface |
-| **BaseIntent** | `com.myapp.core.viewmodel.BaseIntent` | Intent interface |
-
-#### Optional Settings
-
-| Setting | Example Path | Purpose |
-|---------|-------------|---------|
-| **Koin Module** | `org.koin.core.module.Module` | Dependency injection (leave empty if not using) |
-
-### Manual Entry
-
-If you prefer, you can manually type the full package path:
+**Required Settings:**
 ```
-com.yourpackage.core.viewmodel.AppViewModel
+AppViewModel: com.myapp.core.viewmodel.AppViewModel
+ViewModelConfig: com.myapp.core.viewmodel.ViewModelConfig
+BaseState: com.myapp.core.viewmodel.BaseState
+BaseEvent: com.myapp.core.viewmodel.BaseEvent
+BaseUIState: com.myapp.core.viewmodel.BaseUIState
+Refreshable: com.myapp.core.viewmodel.Refreshable
+BaseIntent: com.myapp.core.viewmodel.BaseIntent
+composableRoute: com.myapp.core.utilities.composableRoute
+composableSafeType: com.myapp.core.utilities.composableSafeType
 ```
 
-### Validation
-
-Click **OK** to save. FastCodeGen will validate that:
-- All required fields are filled
-- Paths follow proper format
-- No fields are blank
+5. Click **OK** to save
 
 ---
 
-## Generating Code
+## Screen Generation
 
-### Step-by-Step Guide
+### Basic Screen Without Navigation
 
-#### 1. Start Generation
+**Use Case:** Simple screen with no navigation parameters
 
-**Right-click** on any package or folder where you want to generate code:
-```
-src/main/kotlin/com/yourapp/features/
-```
+**Steps:**
+1. Right-click on your feature package
+2. Select **New → FastCodeGen**
+3. Select **Screen**
+4. Click **Next →**
+5. Configure:
+   ```
+   Feature Name: About
+   ☐ Has Navigation Back
+   Navigation Type: None
+   ```
+6. Click **Generate**
 
-Select **New → FastCodeGen**
+**Generated:**
+```kotlin
+package com.myapp.about.ui
 
-#### 2. Choose Generation Type
+import androidx.compose.runtime.*
 
-You'll see three options:
-
-##### 🎯 ViewModel State
-- Generates ViewModel and State files
-- Perfect for UI-only features
-- **Use when:** You already have data layer
-
-##### 📦 Repository
-- Generates Repository interface and implementation
-- Perfect for data layer only
-- **Use when:** You already have ViewModel
-
-##### 🚀 Full Feature
-- Generates both ViewModel and Repository
-- Complete feature in one go
-- **Use when:** Starting fresh feature
-
-Click **Next →**
-
-#### 3. Configure Your Code
-
-**Feature Name:**
-```
-Login
-```
-This becomes: `LoginViewModel`, `LoginState`, `LoginRepo`, etc.
-
-**Configuration Options:**
-
-| Option | Description | When to Use |
-|--------|-------------|-------------|
-| **Enable Events** | Adds event handling | One-time UI actions (toast, navigation) |
-| **Enable Refresh** | Adds pull-to-refresh | Lists, data that needs refreshing |
-| **Enable UIState** | Adds UI state data class | Complex UI state with multiple properties |
-| **Use Cases** | Specify dependencies | When ViewModel needs use cases |
-| **HTTP Client** | Includes Ktor client | Repository needs network calls |
-
-**Repository Methods (Optional):**
-
-Add as many methods as needed:
-```
-Method Name: getUser
-Return Type: User
-Parameters: userId: String
-
-Method Name: updateProfile
-Return Type: Unit
-Parameters: profile: UserProfile
+@Composable
+fun AboutScreen() {
+    // TODO: Implement your screen content
+}
 ```
 
-💡 **Tip:** You can leave return type or parameters empty!
+### Screen with Simple Navigation
 
-#### 4. Generate
+**Use Case:** Screen with basic navigation using route constants
 
-Click **Generate** and watch the magic happen! ✨
+**Steps:**
+1. Right-click on feature package
+2. Select **New → FastCodeGen → Screen**
+3. Configure:
+   ```
+   Feature Name: Settings
+   ✅ Has Navigation Back
+   Navigation Type: Simple
+   ```
+4. Click **Generate**
+
+**Generated:**
+```kotlin
+package com.myapp.settings.ui
+
+import androidx.compose.runtime.*
+import com.myapp.core.utilities.composableRoute
+
+@Composable
+fun SettingsScreen(
+    navigationBack: () -> Unit
+) {
+    composableRoute(
+        navigationBack = navigationBack
+    ) {
+        // TODO: Implement your screen content
+    }
+}
+```
+
+### Screen with Type-Safe Navigation
+
+**Use Case:** Screen with strongly-typed navigation parameters
+
+**Steps:**
+1. Right-click on feature package
+2. Select **New → FastCodeGen → Screen**
+3. Configure:
+   ```
+   Feature Name: ProductDetail
+   ✅ Has Navigation Back
+   Navigation Type: Type-Safe
+   Parameters:
+     - productId: String
+     - showReviews: Boolean
+   ```
+4. Click **Generate**
+
+**Generated:**
+```kotlin
+package com.myapp.productdetail.ui
+
+import androidx.compose.runtime.*
+import com.myapp.core.utilities.composableSafeType
+
+@Composable
+fun ProductDetailScreen(
+    productId: String,
+    showReviews: Boolean,
+    navigationBack: () -> Unit
+) {
+    composableSafeType(
+        navigationBack = navigationBack
+    ) {
+        // TODO: Implement your screen content
+        // Access: productId, showReviews
+    }
+}
+```
+
+### Screen with ViewModel Integration
+
+**Use Case:** Screen connected to ViewModel for state management
+
+**Steps:**
+1. Generate ViewModel first (or use Full Feature)
+2. Right-click on feature package
+3. Select **New → FastCodeGen → Screen**
+4. Configure:
+   ```
+   Feature Name: Profile
+   ✅ Has Navigation Back
+   Navigation Type: Type-Safe
+   Parameters:
+     - userId: String
+   ```
+5. Click **Generate**
+
+**Generated:**
+```kotlin
+package com.myapp.profile.ui
+
+import androidx.compose.runtime.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.myapp.profile.viewmodel.ProfileIntent
+import com.myapp.profile.viewmodel.ProfileViewModel
+import com.myapp.profile.viewmodel.state.ProfileState
+import com.myapp.core.utilities.composableSafeType
+import org.koin.androidx.compose.koinViewModel
+
+@Composable
+fun ProfileScreen(
+    userId: String,
+    navigationBack: () -> Unit,
+    viewModel: ProfileViewModel = koinViewModel()
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.handleIntent(ProfileIntent.LoadProfile)
+    }
+
+    composableSafeType(
+        navigationBack = navigationBack
+    ) {
+        when (val currentState = state) {
+            is ProfileState.Loading -> LoadingContent()
+            is ProfileState.Success -> ProfileContent(
+                data = currentState.data,
+                uiState = uiState,
+                onIntent = viewModel::handleIntent
+            )
+            is ProfileState.Error -> ErrorContent(
+                message = currentState.message
+            )
+            ProfileState.Idle -> IdleContent()
+        }
+    }
+}
+```
 
 ---
 
-## Advanced Features
+## ViewModel Generation
 
-### Optional Repository Methods
+### Basic ViewModel
 
-**New in 1.0.6:** You can now:
-- Create repositories without any methods
-- Have methods without parameters
-- Have methods without return types (defaults to `Unit`)
+**Use Case:** Simple ViewModel without extras
 
-**Examples:**
+**Steps:**
+1. Right-click on feature package
+2. Select **New → FastCodeGen → ViewModel State**
+3. Configure:
+   ```
+   Feature Name: Dashboard
+   ☐ Enable Events
+   ☐ Enable Refresh
+   ☐ Enable UIState
+   ☐ Include Load Method
+   Use Cases: (leave empty)
+   ```
+4. Click **Generate**
 
+**Generated Files:**
+```
+dashboard/
+└── viewmodel/
+    ├── state/
+    │   └── DashboardState.kt
+    └── DashboardViewModel.kt
+```
+
+**DashboardState.kt:**
 ```kotlin
-// No parameters
-fun refreshData(): Flow<Unit>
+package com.myapp.dashboard.viewmodel.state
 
-// No return type (Unit)
-fun clearCache()
+import com.myapp.core.viewmodel.BaseState
+import com.myapp.core.viewmodel.BaseIntent
 
-// Both parameters and return type
-fun fetchUser(id: String): Flow<User>
+// State
+sealed class DashboardState : BaseState {
+    data object Idle : DashboardState()
+    data class Error(val message: String) : DashboardState()
+}
+
+// Intent
+sealed class DashboardIntent : BaseIntent {
+    data object ClearState : DashboardIntent()
+}
 ```
 
-### Empty Feature
-
-Want just the structure? Generate with:
-- Feature name only
-- No methods
-- Minimal configuration
-
-Perfect for setting up the skeleton!
-
-### Multiple Use Cases
-
-Separate use cases with commas:
-```
-Authentication, Validation, Analytics
-```
-
-Generates:
+**DashboardViewModel.kt:**
 ```kotlin
-class LoginViewModel(
-    private val authenticationUseCase: AuthenticationUseCase,
-    private val validationUseCase: ValidationUseCase,
-    private val analyticsUseCase: AnalyticsUseCase
-) : AppViewModel<...>
+package com.myapp.dashboard.viewmodel
+
+import com.myapp.core.viewmodel.AppViewModel
+import com.myapp.core.viewmodel.ViewModelConfig
+import com.myapp.core.viewmodel.NoEvent
+import com.myapp.dashboard.viewmodel.state.DashboardIntent
+import com.myapp.dashboard.viewmodel.state.DashboardState
+
+class DashboardViewModel() : AppViewModel<DashboardState, NoEvent, Unit, DashboardIntent>(
+    initialState = DashboardState.Idle,
+    initialUIState = Unit,
+    config = ViewModelConfig(
+        enableRefresh = false,
+        enableEvents = false
+    )
+) {
+
+    override fun handleIntent(intent: DashboardIntent) {
+        when (intent) {
+            is DashboardIntent.ClearState -> setState(DashboardState.Idle)
+        }
+    }
+
+    override fun createErrorState(message: String): DashboardState {
+        return DashboardState.Error(message)
+    }
+}
 ```
 
-### Customizing Generated Code
+### ViewModel with All Features
 
-After generation, you can:
-1. Add more states to the sealed class
-2. Add more events
-3. Implement TODO functions
-4. Add custom intents
-5. Extend UIState with more properties
+**Use Case:** Full-featured ViewModel with events, refresh, UIState, and load method
+
+**Steps:**
+1. Right-click on feature package
+2. Select **New → FastCodeGen → ViewModel State**
+3. Configure:
+   ```
+   Feature Name: UserProfile
+   ✅ Enable Events
+   ✅ Enable Refresh
+   ✅ Enable UIState
+   ✅ Include Load Method
+   Use Cases: GetUserUseCase, UpdateUserUseCase
+   ```
+4. Click **Generate**
+
+**Generated UserProfileState.kt:**
+```kotlin
+package com.myapp.userprofile.viewmodel.state
+
+import com.myapp.core.viewmodel.*
+
+// State
+sealed class UserProfileState : BaseState {
+    data object Idle : UserProfileState()
+    data object Loading : UserProfileState()
+    data object Success : UserProfileState()
+    data class Error(val message: String) : UserProfileState()
+}
+
+// Event
+sealed class UserProfileEvent : BaseEvent {
+    data object Loading : UserProfileEvent()
+    data object Success : UserProfileEvent()
+    data class Error(val message: String) : UserProfileEvent()
+}
+
+// UIState
+data class UserProfileUIState(
+    val isRefresh: Boolean = false,
+    val isLoading: Boolean = false,
+    // TODO: Add your UI state properties here
+) : BaseUIState, Refreshable {
+    override fun withRefresh(isRefresh: Boolean): BaseUIState {
+        return copy(isRefresh = isRefresh)
+    }
+}
+
+// Intent
+sealed class UserProfileIntent : BaseIntent {
+    data object ClearState : UserProfileIntent()
+    data object LoadUserProfile : UserProfileIntent()
+    data object RefreshRequest : UserProfileIntent()
+    // TODO: Add your custom intents here
+}
+```
+
+**Generated UserProfileViewModel.kt:**
+```kotlin
+package com.myapp.userprofile.viewmodel
+
+import com.myapp.core.viewmodel.AppViewModel
+import com.myapp.core.viewmodel.ViewModelConfig
+import com.myapp.userprofile.viewmodel.state.*
+
+class UserProfileViewModel(
+    private val getUserUseCase: GetUserUseCase,
+    private val updateUserUseCase: UpdateUserUseCase
+) : AppViewModel<UserProfileState, UserProfileEvent, UserProfileUIState, UserProfileIntent>(
+    initialState = UserProfileState.Idle,
+    initialUIState = UserProfileUIState(),
+    config = ViewModelConfig(
+        enableRefresh = true,
+        enableEvents = true
+    )
+) {
+
+    init {
+        loadUserProfile()
+    }
+
+    override fun handleIntent(intent: UserProfileIntent) {
+        when (intent) {
+            is UserProfileIntent.ClearState -> setState(UserProfileState.Idle)
+            is UserProfileIntent.LoadUserProfile -> loadUserProfile()
+            is UserProfileIntent.RefreshRequest -> refreshRequest { loadUserProfile() }
+        }
+    }
+
+    override fun createErrorState(message: String): UserProfileState {
+        return UserProfileState.Error(message)
+    }
+
+    override fun createErrorEvent(message: String): UserProfileEvent {
+        return UserProfileEvent.Error(message)
+    }
+
+    private fun loadUserProfile() {
+        launch {
+            setState(UserProfileState.Loading)
+            // TODO: Implement
+        }
+    }
+}
+```
+
+---
+
+## Repository Generation
+
+### Basic Repository
+
+**Use Case:** Simple repository without methods
+
+**Steps:**
+1. Right-click on feature package
+2. Select **New → FastCodeGen → Repository**
+3. Configure:
+   ```
+   Feature Name: Analytics
+   ✅ Needs HttpClient
+   Methods: (leave empty or remove default method)
+   ```
+4. Click **Generate**
+
+**Generated Files:**
+```
+analytics/
+├── domain/
+│   └── repo/
+│       └── AnalyticsRepo.kt
+└── data/
+    └── repo/
+        └── AnalyticsRepoImpl.kt
+```
+
+### Repository with Custom Methods
+
+**Use Case:** Repository with specific API endpoints
+
+**Steps:**
+1. Right-click on feature package
+2. Select **New → FastCodeGen → Repository**
+3. Configure:
+   ```
+   Feature Name: Product
+   ✅ Needs HttpClient
+   Methods:
+     Method 1:
+       Name: getProducts
+       Return Type: Flow<List<Product>>
+       Parameters: categoryId: String, page: Int
+     
+     Method 2:
+       Name: getProductDetail
+       Return Type: Flow<Product>
+       Parameters: productId: String
+     
+     Method 3:
+       Name: searchProducts
+       Return Type: Flow<List<Product>>
+       Parameters: query: String, filters: Map<String, String>
+   ```
+4. Click **Generate**
+
+**Generated ProductRepo.kt:**
+```kotlin
+package com.myapp.product.domain.repo
+
+import kotlinx.coroutines.flow.Flow
+
+interface ProductRepo {
+
+    fun getProducts(categoryId: String, page: Int): Flow<List<Product>>
+
+    fun getProductDetail(productId: String): Flow<Product>
+
+    fun searchProducts(query: String, filters: Map<String, String>): Flow<List<Product>>
+
+}
+```
+
+**Generated ProductRepoImpl.kt:**
+```kotlin
+package com.myapp.product.data.repo
+
+import com.myapp.product.domain.repo.ProductRepo
+import io.ktor.client.HttpClient
+import kotlinx.coroutines.flow.Flow
+
+class ProductRepoImpl(
+    private val httpClient: HttpClient,
+) : ProductRepo {
+
+    override fun getProducts(categoryId: String, page: Int): Flow<List<Product>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getProductDetail(productId: String): Flow<Product> {
+        TODO("Not yet implemented")
+    }
+
+    override fun searchProducts(query: String, filters: Map<String, String>): Flow<List<Product>> {
+        TODO("Not yet implemented")
+    }
+}
+```
+
+### Repository Without HttpClient
+
+**Use Case:** Local database repository
+
+**Steps:**
+1. Right-click on feature package
+2. Select **New → FastCodeGen → Repository**
+3. Configure:
+   ```
+   Feature Name: Cache
+   ☐ Needs HttpClient
+   Methods:
+     - saveData(key: String, value: String) → Flow<Unit>
+     - getData(key: String) → Flow<String>
+     - clearCache() → Flow<Unit>
+   ```
+4. Click **Generate**
+
+---
+
+## Full Feature Generation
+
+### Complete Feature with Everything
+
+**Use Case:** Generate entire feature with Screen, ViewModel, and Repository
+
+**Steps:**
+1. Right-click on feature package
+2. Select **New → FastCodeGen → Full Feature**
+3. Configure:
+   ```
+   Feature Name: Checkout
+   
+   Generation Options:
+   ✅ Generate Screen
+   ✅ Generate ViewModel
+   ✅ Generate Repository
+   
+   Screen Configuration:
+   ✅ Has Navigation Back
+   Navigation Type: Type-Safe
+   Parameters:
+     - cartId: String
+     - promoCode: String
+   
+   ViewModel Configuration:
+   ✅ Enable Events
+   ✅ Enable Refresh
+   ✅ Enable UIState
+   ✅ Include Load Method
+   Use Cases: CalculateTotalUseCase, ProcessPaymentUseCase
+   
+   Repository Configuration:
+   ✅ Needs HttpClient
+   Methods:
+     - calculateTotal(cartId: String, promoCode: String) → Flow<CheckoutTotal>
+     - processPayment(paymentInfo: PaymentInfo) → Flow<PaymentResult>
+     - verifyPromoCode(code: String) → Flow<PromoCodeValidation>
+   ```
+4. Click **Generate**
+
+**Generated Structure:**
+```
+checkout/
+├── ui/
+│   └── CheckoutScreen.kt
+├── viewmodel/
+│   ├── state/
+│   │   ├── CheckoutState.kt
+│   │   ├── CheckoutEvent.kt
+│   │   ├── CheckoutUIState.kt
+│   │   └── CheckoutIntent.kt
+│   └── CheckoutViewModel.kt
+├── domain/
+│   └── repo/
+│       └── CheckoutRepo.kt
+└── data/
+    └── repo/
+        └── CheckoutRepoImpl.kt
+```
+
+### Feature with Only Screen and ViewModel
+
+**Use Case:** UI-heavy feature without repository
+
+**Steps:**
+1. Configure:
+   ```
+   Feature Name: Onboarding
+   
+   ✅ Generate Screen
+   ✅ Generate ViewModel
+   ☐ Generate Repository
+   
+   Screen: Type-Safe with no parameters
+   ViewModel: All features enabled
+   ```
+
+### Feature with Only ViewModel and Repository
+
+**Use Case:** Background service or business logic
+
+**Steps:**
+1. Configure:
+   ```
+   Feature Name: Synchronization
+   
+   ☐ Generate Screen
+   ✅ Generate ViewModel
+   ✅ Generate Repository
+   ```
+
+---
+
+## Advanced Examples
+
+### Example 1: E-Commerce Product Listing
+
+**Scenario:** Create a product listing feature with pagination, filters, and search
+
+```
+Feature Name: ProductListing
+
+Screen Configuration:
+✅ Has Navigation Back
+Navigation Type: Type-Safe
+Parameters:
+  - categoryId: String
+  - initialFilter: String
+
+ViewModel Configuration:
+✅ Enable Events (for navigation to detail)
+✅ Enable Refresh (for pull-to-refresh)
+✅ Enable UIState (for filters, search query, pagination)
+✅ Include Load Method
+Use Cases: GetProductsUseCase, SearchProductsUseCase
+
+Repository Configuration:
+✅ Needs HttpClient
+Methods:
+  - getProducts(categoryId: String, page: Int, filters: Map<String, String>) → Flow<ProductPage>
+  - searchProducts(query: String, categoryId: String) → Flow<List<Product>>
+  - getFilters(categoryId: String) → Flow<List<Filter>>
+```
+
+### Example 2: User Authentication Flow
+
+**Scenario:** Login screen with validation and error handling
+
+```
+Feature Name: Login
+
+Screen Configuration:
+☐ Has Navigation Back (it's the entry point)
+Navigation Type: Simple
+
+ViewModel Configuration:
+✅ Enable Events (for navigation after success)
+☐ Enable Refresh
+✅ Enable UIState (for email, password, loading states)
+✅ Include Load Method (to check existing session)
+Use Cases: AuthenticateUseCase, ValidateCredentialsUseCase
+
+Repository Configuration:
+✅ Needs HttpClient
+Methods:
+  - login(email: String, password: String) → Flow<AuthResult>
+  - validateSession(token: String) → Flow<Boolean>
+  - logout() → Flow<Unit>
+```
+
+### Example 3: Settings Screen
+
+**Scenario:** Simple settings screen without repository
+
+```
+Feature Name: Settings
+
+Screen Configuration:
+✅ Has Navigation Back
+Navigation Type: Simple
+
+ViewModel Configuration:
+☐ Enable Events
+☐ Enable Refresh
+✅ Enable UIState (for settings values)
+☐ Include Load Method
+Use Cases: (none - local preferences)
+
+Repository: Not generated
+```
 
 ---
 
 ## Best Practices
 
-### 1. Consistent Naming
+### 1. Naming Conventions
 
-Always use clear, descriptive names:
-✅ **Good:** `Login`, `UserProfile`, `Settings`  
-❌ **Bad:** `Screen1`, `Feature`, `Test`
+**Feature Names:**
+- Use PascalCase for multi-word features: `UserProfile`, `ProductDetail`
+- Use single words when appropriate: `Login`, `Dashboard`
+- Be descriptive: `CheckoutPayment` instead of just `Payment`
 
-### 2. Feature Organization
+**Use Cases:**
+- Always use PascalCase
+- End with `UseCase`: `GetUserDataUseCase`, `UpdateProfileUseCase`
 
-Organize by feature, not by layer:
+**Repository Methods:**
+- Use camelCase
+- Start with verb: `getUser`, `updateProfile`, `deleteAccount`
+- Be specific: `getActiveProducts` instead of `getProducts`
+
+### 2. When to Enable Features
+
+**Enable Events When:**
+- You need one-time UI actions (navigation, toasts, dialogs)
+- You want to separate concerns between state and side effects
+- You have temporary UI notifications
+
+**Enable Refresh When:**
+- Your screen supports pull-to-refresh
+- You have periodic data updates
+- Users need to manually reload data
+
+**Enable UIState When:**
+- You have form fields or input states
+- You need local UI-only state (like expanded/collapsed)
+- You want to separate business state from UI state
+
+**Include Load Method When:**
+- ViewModel needs initialization on creation
+- You want to load initial data automatically
+- You have setup logic that runs once
+
+### 3. Repository Method Design
+
+**Good Method Design:**
+```kotlin
+// ✅ Clear, specific, type-safe
+fun getUser(userId: String): Flow<User>
+fun updateProfile(userId: String, profile: ProfileUpdate): Flow<Unit>
+fun searchProducts(query: String, filters: ProductFilters): Flow<List<Product>>
 ```
-✅ GOOD
-features/
-├── login/
-│   ├── viewmodel/
-│   └── data/
-└── profile/
-    ├── viewmodel/
-    └── data/
 
-❌ BAD
-viewmodels/
-├── LoginViewModel
-└── ProfileViewModel
-data/
-├── LoginRepo
-└── ProfileRepo
+**Avoid:**
+```kotlin
+// ❌ Too generic, unclear parameters
+fun getData(id: String): Flow<Any>
+fun update(map: Map<String, Any>): Flow<Unit>
+fun search(vararg params: String): Flow<List<Any>>
 ```
 
-### 3. Use Cases
+### 4. Project Structure
 
-Only add use cases that the ViewModel actually needs:
+**Recommended Package Structure:**
 ```
-✅ Login → Authentication, Validation
-✅ UserList → FetchUsers
-❌ Login → All possible use cases
+com.myapp/
+├── core/
+│   ├── viewmodel/           # Base classes
+│   └── utilities/           # Navigation utilities
+├── features/
+│   ├── login/
+│   │   ├── ui/
+│   │   ├── viewmodel/
+│   │   ├── domain/repo/
+│   │   └── data/repo/
+│   ├── dashboard/
+│   └── settings/
+└── di/                      # Dependency injection
 ```
 
-### 4. Repository Methods
+### 5. Settings Configuration Tips
 
-Keep methods focused and specific:
-```
-✅ getUser(id: String)
-✅ updateUserProfile(profile: Profile)
-❌ doEverything()
-```
-
-### 5. Settings Management
-
-- **Configure once** per project
-- **Document** your base class locations
-- **Update** settings when base classes change
-- **Share** settings approach with team
+1. **Always use browse button (📁)** - Ensures correct path detection
+2. **Verify paths after browsing** - Check that package path is complete
+3. **Keep settings consistent** - Use same package structure for all base classes
+4. **Document your structure** - Help team members configure correctly
 
 ---
 
 ## Troubleshooting
 
-### Issue: Settings Dialog Shows Errors
+### Issue: "Settings not configured" error
 
-**Symptom:** Red text showing missing fields
-
-**Solution:**
-1. Click 📁 for each red field
-2. Browse to the actual file
-3. Verify file exists in your project
-4. Click OK
-
----
-
-### Issue: Generated Code Won't Compile
-
-**Symptom:** Import errors or red underlines
+**Problem:** Plugin shows error when trying to generate code
 
 **Solutions:**
+1. Click ⚙️ Settings button in the dialog
+2. Configure ALL required paths (use 📁 browse button)
+3. Click OK to save
+4. Try generating again
 
-1. **Check Settings:**
-   - Open settings (⚙️)
-   - Verify all paths are correct
-   - Click 📁 to auto-detect again
+### Issue: Generated code doesn't compile
 
-2. **Verify Base Classes:**
-   - Ensure base classes exist
-   - Check spelling and package names
-   - Make sure they're in the correct module
-
-3. **Clean & Rebuild:**
-   ```
-   Build → Clean Project
-   Build → Rebuild Project
-   ```
-
-4. **Invalidate Caches:**
-   ```
-   File → Invalidate Caches → Invalidate and Restart
-   ```
-
----
-
-### Issue: Plugin Menu Not Appearing
-
-**Symptom:** "FastCodeGen" not in New menu
+**Problem:** Import errors or unresolved references
 
 **Solutions:**
+1. **Check settings paths:**
+   - Open Settings (⚙️)
+   - Verify each path matches your actual base classes
+   - Use 📁 to re-detect if needed
 
-1. **Check IDE Version:**
-   - Must be 2024.2 or later
-   - Update if older
+2. **Verify base classes exist:**
+   - Navigate to each configured path in your project
+   - Ensure classes/interfaces are properly defined
 
-2. **Enable Kotlin Plugin:**
+3. **Check Kotlin version:**
+   - Ensure you're using Kotlin 1.9.0 or later
+   - Update Kotlin plugin if needed
+
+### Issue: Screen generation doesn't work
+
+**Problem:** Screen file not created or has errors
+
+**Solutions:**
+1. **Check Compose dependencies:**
+   ```gradle
+   implementation("androidx.compose.ui:ui:1.5.0")
+   implementation("androidx.navigation:navigation-compose:2.7.0")
    ```
-   Settings → Plugins → Search "Kotlin"
-   Enable if disabled
+
+2. **Verify navigation utility paths:**
+   - Open Settings
+   - Check `composableRoute` path
+   - Check `composableSafeType` path
+   - Ensure these functions exist in your project
+
+3. **Check navigation type:**
+   - For Simple: ensure `composableRoute` is configured
+   - For Type-Safe: ensure `composableSafeType` is configured
+
+### Issue: ViewModel with use cases has compilation errors
+
+**Problem:** Use case dependencies not resolved
+
+**Solutions:**
+1. **Check use case names:**
+   - Ensure they match your actual use case classes
+   - Use correct casing: `GetUserUseCase`, not `getUserUseCase`
+
+2. **Add use cases to DI:**
+   ```kotlin
+   single { GetUserUseCase(get()) }
+   single { UpdateUserUseCase(get()) }
    ```
 
-3. **Right Location:**
-   - Right-click on a **package** or **folder**
-   - Must be in `src/main/kotlin/` or similar
+3. **Import use cases:**
+   - Manually add missing imports if needed
+
+### Issue: Repository methods have wrong signatures
+
+**Problem:** Method parameters or return types are incorrect
+
+**Solutions:**
+1. **Re-generate with correct configuration:**
+   - Use exact type names: `Flow<User>`, not `Flow<user>`
+   - Include all parameters with types
+
+2. **Follow proper syntax:**
+   ```
+   ✅ Correct:
+   Parameters: userId: String, includeProfile: Boolean
+   Return Type: Flow<UserDetail>
+   
+   ❌ Incorrect:
+   Parameters: userId, includeProfile
+   Return Type: UserDetail
+   ```
+
+### Issue: Can't find the plugin menu
+
+**Problem:** "New → FastCodeGen" doesn't appear
+
+**Solutions:**
+1. **Check context:**
+   - Right-click on a package/folder, not a file
+   - Must be in a Kotlin source folder
+
+2. **Verify installation:**
+   - Settings → Plugins → Installed
+   - Search for "FastCodeGen"
+   - Restart IDE if needed
+
+3. **Check IDE version:**
+   - Requires IntelliJ 2024.2+ or Android Studio Koala+
+   - Update if necessary
 
 ---
 
-### Issue: Browse Button Doesn't Work
+## Next Steps
 
-**Symptom:** File chooser doesn't open
+Now that you've learned how to use FastCodeGen:
 
-**Solution:**
-- Check file permissions
-- Verify project is properly opened
-- Try manual entry instead
+1. **Start with simple features** - Generate a basic ViewModel to get familiar
+2. **Try screen generation** - Create a Compose screen with navigation
+3. **Build complete features** - Use Full Feature generation for new features
+4. **Customize for your project** - Adapt settings to your architecture
+5. **Share with your team** - Help others configure and use the plugin
 
----
-
-### Issue: Wrong Imports Generated
-
-**Symptom:** Generated files have wrong package paths
-
-**Solution:**
-1. Open Settings
-2. Click 📁 for each field
-3. Select the correct file
-4. Verify auto-detected path
-5. Save and try again
+For more information:
+- 📖 [README](README.md) - Getting started guide
+- ⚡ [Quick Reference](QUICK_REFERENCE.md) - Cheat sheet
+- 🔧 [Implementation Steps](IMPLEMENTATION_STEPS.md) - Setup guide
 
 ---
-
-## Tips & Tricks
-
-### Tip 1: Quick Settings Access
-Press **Ctrl/Cmd + Shift + A** → Type "FastCodeGen" → Select Settings
-
-### Tip 2: Documentation Access
-Click **📚 Help** button in the dialog for instant access to all docs
-
-### Tip 3: Keyboard Shortcuts
-- **Tab** - Navigate between fields
-- **Enter** - Click OK/Generate
-- **Esc** - Cancel dialog
-
-### Tip 4: Batch Generation
-Generate multiple features quickly:
-1. Generate Feature A
-2. Press **Ctrl/Cmd + Z** to stay in same location
-3. Right-click → New → FastCodeGen
-4. Generate Feature B
-
-### Tip 5: Copy Settings
-Settings are project-based. To copy to another project:
-1. Note down all package paths
-2. Open new project
-3. Configure settings with same paths
-4. Or keep base classes in shared module
-
----
-
-## Examples
-
-### Example 1: Simple ViewModel
-
-**Goal:** Create login ViewModel with events
-
-**Steps:**
-1. Right-click on `com.app.features`
-2. New → FastCodeGen → ViewModel State
-3. Name: `Login`
-4. ✓ Enable Events
-5. Generate
-
-**Result:**
-```kotlin
-LoginState.kt - State management
-LoginViewModel.kt - ViewModel with events
-```
-
----
-
-### Example 2: Repository with Methods
-
-**Goal:** Create user repository
-
-**Steps:**
-1. Right-click on `com.app.features`
-2. New → FastCodeGen → Repository
-3. Name: `User`
-4. ✓ Needs HttpClient
-5. Add methods:
-   - `getUser(id: String)` → `User`
-   - `updateUser(user: User)` → `Unit`
-6. Generate
-
-**Result:**
-```kotlin
-domain/repo/UserRepo.kt - Interface
-data/repo/UserRepoImpl.kt - Implementation with HttpClient
-```
-
----
-
-### Example 3: Complete Feature
-
-**Goal:** Build profile feature with data and UI
-
-**Steps:**
-1. Right-click on `com.app.features`
-2. New → FastCodeGen → Full Feature
-3. Name: `Profile`
-4. ViewModel Config:
-   - ✓ Enable Events
-   - ✓ Enable Refresh
-   - ✓ Enable UIState
-   - Use Cases: `FetchProfile, UpdateProfile`
-5. Repository Config:
-   - ✓ Needs HttpClient
-   - Methods:
-      - `getProfile()` → `Profile`
-      - `updateProfile(profile: Profile)` → `Unit`
-6. Generate
-
-**Result:** Complete feature ready to implement!
-
----
-
-## Getting Help
-
-### Documentation
-- **README** - Overview and quick start
-- **Quick Reference** - Cheat sheet
-- **Implementation Steps** - Detailed setup
-
-### Contact
-- **Email:** alialfayed.official@gmail.com
-- **LinkedIn:** [alfayedoficial](https://www.linkedin.com/in/alfayedoficial/)
-- **GitHub:** [alfayedoficial](https://github.com/alfayedoficial)
-
----
-
-<div align="center">
 
 **Happy Coding! 🚀**
-
-*FastCodeGen v1.0.6 - Making Kotlin development faster*
-
-</div>

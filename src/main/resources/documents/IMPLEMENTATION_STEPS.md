@@ -1,230 +1,263 @@
-# FastCodeGen - Implementation Steps
+# FastCodeGen Implementation Steps
 
-This document provides step-by-step instructions to implement all improvements to your FastCodeGen plugin.
-
-## 📋 Overview
-
-We're improving your plugin with:
-- ✅ Better UI with proper styling and tooltips
-- ✅ Clean code organization with utility classes
-- ✅ Comprehensive documentation
-- ✅ Professional metadata and descriptions
-- ✅ Version 1.0.0 release preparation
-
-## 🔧 Step-by-Step Implementation
-
-### Step 1: Update plugin.xml
-
-**File:** `src/main/resources/META-INF/plugin.xml`
-
-**Action:** Replace entire file with the improved version
-
-**Key Changes:**
-- Updated vendor information with your email and LinkedIn
-- Added comprehensive description with HTML formatting
-- Added version 1.0.0
-- Added change notes
-- Added icon reference to action
-
-**File Content:** See `/tmp/plugin.xml`
+**Complete Setup Guide for Version 1.0.6**
 
 ---
 
-### Step 2: Create Utility Classes
+## Table of Contents
 
-#### 2.1 Create StringUtils.kt
-
-**Location:** `src/main/kotlin/com/alfayedoficial/fastcodegen/utils/StringUtils.kt`
-
-**Purpose:** Centralize string operations
-
-**File Content:** See `/tmp/StringUtils.kt`
-
-#### 2.2 Create PackageUtils.kt
-
-**Location:** `src/main/kotlin/com/alfayedoficial/fastcodegen/utils/PackageUtils.kt`
-
-**Purpose:** Handle package name operations
-
-**File Content:** See `/tmp/PackageUtils.kt`
-
-#### 2.3 Create FileUtils.kt
-
-**Location:** `src/main/kotlin/com/alfayedoficial/fastcodegen/utils/FileUtils.kt`
-
-**Purpose:** Handle file creation operations
-
-**File Content:** See `/tmp/FileUtils.kt`
+1. [Prerequisites](#prerequisites)
+2. [Project Setup](#project-setup)
+3. [Base Classes Implementation](#base-classes-implementation)
+4. [Navigation Utilities Setup](#navigation-utilities-setup)
+5. [Plugin Configuration](#plugin-configuration)
+6. [Dependency Injection Setup](#dependency-injection-setup)
+7. [First Code Generation](#first-code-generation)
+8. [Verification](#verification)
 
 ---
 
-### Step 3: Create UI Constants
+## Prerequisites
 
-**Location:** `src/main/kotlin/com/alfayedoficial/fastcodegen/ui/UIConstants.kt`
+### IDE Requirements
+- **IntelliJ IDEA 2024.2+** or **Android Studio Koala (2024.1.1)+**
+- **Kotlin plugin** enabled (usually pre-installed)
 
-**Purpose:** Centralize UI constants for consistency
+### Project Requirements
+- **Kotlin 1.9.0+** (Kotlin 2.0+ recommended)
+- **Gradle 8.0+**
+- **JDK 17+**
 
-**File Content:** See `/tmp/UIConstants.kt`
-
----
-
-### Step 4: Update Generators to Use Utilities
-
-#### 4.1 Update ViewModelStateGenerator.kt
-
-**Changes needed:**
-1. Import utility classes:
-   ```kotlin
-   import com.alfayedoficial.fastcodegen.utils.StringUtils
-   import com.alfayedoficial.fastcodegen.utils.PackageUtils
-   import com.alfayedoficial.fastcodegen.utils.FileUtils
-   ```
-
-2. Replace string methods:
-   ```kotlin
-   // Replace:
-   private fun toCamelCase(input: String): String { ... }
-   // With:
-   // Remove method - use StringUtils.toCamelCase(input)
-   
-   // Replace:
-   private fun toPascalCase(input: String): String { ... }
-   // With:
-   // Remove method - use StringUtils.toPascalCase(input)
-   ```
-
-3. Replace package methods:
-   ```kotlin
-   // Replace:
-   private fun getPackageName(directory: PsiDirectory): String { ... }
-   // With:
-   // Remove method - use PackageUtils.getPackageName(project, directory)
-   ```
-
-4. Replace file creation:
-   ```kotlin
-   // Replace:
-   private fun createKotlinFile(...) { ... }
-   // With:
-   // Remove method - use FileUtils.createKotlinFile(project, directory, fileName, content)
-   ```
-
-5. Update generate() method:
-   ```kotlin
-   val featureFolder = StringUtils.toCamelCase(featureName)
-   val featureClass = StringUtils.toPascalCase(featureName)
-   
-   val featureDir = PackageUtils.findOrCreateSubdirectory(baseDirectory, featureFolder)
-   val viewModelDir = PackageUtils.findOrCreateSubdirectory(featureDir, "viewmodel")
-   val stateDir = PackageUtils.findOrCreateSubdirectory(viewModelDir, "state")
-   
-   val basePackage = PackageUtils.getPackageName(project, baseDirectory)
-   
-   FileUtils.createKotlinFile(project, stateDir, "${featureClass}State.kt", stateContent)
-   FileUtils.createKotlinFile(project, viewModelDir, "${featureClass}ViewModel.kt", viewModelContent)
-   ```
-
-#### 4.2 Update RepoGenerator.kt
-
-Apply same changes as ViewModelStateGenerator.kt
-
-#### 4.3 Update FeatureGenerator.kt
-
-No changes needed - it just calls the other generators
+### Optional Dependencies
+- **Jetpack Compose** (for screen generation)
+- **Navigation Compose** (for navigation features)
+- **Koin** or **Hilt** (for dependency injection)
+- **Ktor Client** (for HTTP repositories)
 
 ---
 
-### Step 5: Update CodeGenDialog.kt
+## Project Setup
 
-**Location:** `src/main/kotlin/com/alfayedoficial/fastcodegen/dialog/CodeGenDialog.kt`
+### Step 1: Add Required Dependencies
 
-**Action:** Replace entire file with improved version
+Add to your `build.gradle.kts` (app module):
 
-**Key Improvements:**
-- Better UI layout with proper sections
-- Added tooltips to all input fields
-- Better spacing and sizing
-- Added helper class for document listeners
-- Cleaner code structure
-- Better error handling
-
-**File Content:** See `/tmp/CodeGenDialog.kt`
-
----
-
-### Step 6: Add Documentation
-
-#### 6.1 Update README.md
-
-**Location:** `README.md` (project root)
-
-**File Content:** See `/tmp/README.md`
-
-**Key Sections:**
-- Overview with badges
-- Features list
-- Installation instructions
-- Usage guide with examples
-- Screenshots section (add actual screenshots later)
-- FAQ
-- Contributing guidelines
-- License
-- Author information
-
-#### 6.2 Create USER_GUIDE.md
-
-**Location:** `USER_GUIDE.md` (project root)
-
-**File Content:** See `/tmp/USER_GUIDE.md`
-
-**Key Sections:**
-- Getting started
-- Step-by-step tutorials
-- Configuration options
-- Best practices
-- Troubleshooting
-- FAQ
-
----
-
-### Step 7: Add Plugin Icon (Optional but Recommended)
-
-**Location:** `src/main/resources/META-INF/pluginIcon.svg`
-
-**Action:** Create a simple SVG icon
-
-**Example Icon Code:**
-```xml
-<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-    <rect width="40" height="40" rx="8" fill="#4CAF50"/>
-    <path d="M10 20 L15 15 L20 20 L15 25 Z" fill="white"/>
-    <path d="M20 20 L25 15 L30 20 L25 25 Z" fill="white"/>
-    <circle cx="20" cy="30" r="2" fill="white"/>
-</svg>
+```kotlin
+dependencies {
+    // Kotlin
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.20")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    
+    // Lifecycle & ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
+    
+    // Optional: Jetpack Compose (for screen generation)
+    implementation("androidx.compose.ui:ui:1.5.4")
+    implementation("androidx.compose.material3:material3:1.1.2")
+    implementation("androidx.navigation:navigation-compose:2.7.5")
+    
+    // Optional: Dependency Injection (Koin)
+    implementation("io.insert-koin:koin-android:3.5.0")
+    implementation("io.insert-koin:koin-androidx-compose:3.5.0")
+    
+    // Optional: HTTP Client (Ktor)
+    implementation("io.ktor:ktor-client-core:2.3.5")
+    implementation("io.ktor:ktor-client-android:2.3.5")
+}
 ```
 
-Or use an online tool like:
-- https://www.flaticon.com/ (download SVG)
-- https://www.iconfinder.com/ (download SVG)
+### Step 2: Create Core Package Structure
+
+Create the following package structure in your project:
+
+```
+com.yourapp/
+├── core/
+│   ├── viewmodel/           # Base ViewModel classes
+│   └── utilities/           # Navigation utilities
+├── features/                # Feature modules
+└── di/                      # Dependency injection
+```
 
 ---
 
-### Step 8: Update Build Configuration
+## Base Classes Implementation
 
-**Location:** `build.gradle.kts`
+### Step 1: Create Base Interfaces
 
-**Ensure these values:**
+Create `core/viewmodel/BaseInterfaces.kt`:
+
 ```kotlin
-group = "com.alfayedoficial"
-version = "1.0.0"
+package com.yourapp.core.viewmodel
 
-intellijPlatform {
-    pluginConfiguration {
-        name = "FastCodeGen"
-        version = "1.0.0"
+/**
+ * Base interface for all states
+ */
+interface BaseState
+
+/**
+ * Base interface for all events
+ */
+interface BaseEvent
+
+/**
+ * Special event type for ViewModels without events
+ */
+object NoEvent : BaseEvent
+
+/**
+ * Base interface for all UI states
+ */
+interface BaseUIState
+
+/**
+ * Base interface for all intents
+ */
+interface BaseIntent
+
+/**
+ * Interface for refreshable UI states
+ */
+interface Refreshable {
+    fun withRefresh(isRefresh: Boolean): BaseUIState
+}
+```
+
+### Step 2: Create ViewModel Configuration
+
+Create `core/viewmodel/ViewModelConfig.kt`:
+
+```kotlin
+package com.yourapp.core.viewmodel
+
+/**
+ * Configuration for ViewModel behavior
+ */
+data class ViewModelConfig(
+    val enableRefresh: Boolean = false,
+    val enableEvents: Boolean = false
+)
+```
+
+### Step 3: Create Base ViewModel
+
+Create `core/viewmodel/AppViewModel.kt`:
+
+```kotlin
+package com.yourapp.core.viewmodel
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+
+/**
+ * Base ViewModel with state management
+ */
+abstract class AppViewModel<STATE : BaseState, EVENT : BaseEvent, UISTATE : BaseUIState, INTENT : BaseIntent>(
+    initialState: STATE,
+    initialUIState: UISTATE,
+    private val config: ViewModelConfig
+) : ViewModel() {
+
+    // State management
+    private val _state = MutableStateFlow(initialState)
+    val state: StateFlow<STATE> = _state.asStateFlow()
+
+    // UI State management
+    private val _uiState = MutableStateFlow(initialUIState)
+    val uiState: StateFlow<UISTATE> = _uiState.asStateFlow()
+
+    // Event management (if enabled)
+    private val _event = MutableSharedFlow<EVENT>()
+    val event: SharedFlow<EVENT> = _event.asSharedFlow()
+
+    // Error handler
+    private val errorHandler = CoroutineExceptionHandler { _, exception ->
+        handleError(exception)
+    }
+
+    /**
+     * Handle intents from UI
+     */
+    abstract fun handleIntent(intent: INTENT)
+
+    /**
+     * Create error state from exception
+     */
+    abstract fun createErrorState(message: String): STATE
+
+    /**
+     * Create error event from exception (only if events are enabled)
+     */
+    open fun createErrorEvent(message: String): EVENT {
+        throw NotImplementedError("createErrorEvent must be implemented when events are enabled")
+    }
+
+    /**
+     * Update state
+     */
+    protected fun setState(state: STATE) {
+        _state.value = state
+    }
+
+    /**
+     * Update UI state
+     */
+    protected fun setUIState(uiState: UISTATE) {
+        _uiState.value = uiState
+    }
+
+    /**
+     * Emit event (only if events are enabled)
+     */
+    protected suspend fun emitEvent(event: EVENT) {
+        if (config.enableEvents) {
+            _event.emit(event)
+        }
+    }
+
+    /**
+     * Launch coroutine with error handling
+     */
+    protected fun launch(block: suspend () -> Unit) {
+        viewModelScope.launch(errorHandler) {
+            block()
+        }
+    }
+
+    /**
+     * Handle refresh request (only if refresh is enabled)
+     */
+    protected fun refreshRequest(onRefresh: () -> Unit) {
+        if (config.enableRefresh && _uiState.value is Refreshable) {
+            val refreshable = _uiState.value as Refreshable
+            setUIState(refreshable.withRefresh(true) as UISTATE)
+            onRefresh()
+            viewModelScope.launch {
+                setUIState(refreshable.withRefresh(false) as UISTATE)
+            }
+        }
+    }
+
+    /**
+     * Handle errors
+     */
+    private fun handleError(exception: Throwable) {
+        val message = exception.message ?: "Unknown error occurred"
         
-        ideaVersion {
-            sinceBuild = "242"
+        // Update state
+        setState(createErrorState(message))
+        
+        // Emit error event if enabled
+        if (config.enableEvents) {
+            viewModelScope.launch {
+                emitEvent(createErrorEvent(message))
+            }
         }
     }
 }
@@ -232,285 +265,410 @@ intellijPlatform {
 
 ---
 
-### Step 9: Testing Checklist
+## Navigation Utilities Setup
 
-Test each generation mode thoroughly:
+### Option 1: Simple Navigation (Route-based)
 
-#### ViewModel State Testing
-- [ ] Generate with all options enabled
-- [ ] Generate with events only
-- [ ] Generate with refresh only
-- [ ] Generate with UIState only
-- [ ] Generate with no options
-- [ ] Generate with use cases
-- [ ] Generate without use cases
-- [ ] Verify all generated files compile
-- [ ] Check package names are correct
-- [ ] Verify class names use PascalCase
-- [ ] Verify folder names use camelCase
+Create `core/utilities/NavigationUtils.kt`:
 
-#### Repository Testing
-- [ ] Generate with HttpClient
-- [ ] Generate without HttpClient
-- [ ] Generate with 1 method
-- [ ] Generate with multiple methods
-- [ ] Generate with no parameters
-- [ ] Generate with parameters
-- [ ] Verify interface and implementation are created
-- [ ] Check Flow return types
-- [ ] Verify package structure
+```kotlin
+package com.yourapp.core.utilities
 
-#### Full Feature Testing
-- [ ] Generate complete feature
-- [ ] Verify ViewModel files created
-- [ ] Verify Repository files created
-- [ ] Check all configurations work
-- [ ] Test with different feature names
-- [ ] Verify folder structure
-- [ ] Check all files compile together
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 
-#### UI Testing
-- [ ] Check tooltips appear on hover
-- [ ] Verify input validation works
-- [ ] Test "Add Method" button
-- [ ] Check scrolling works
-- [ ] Test on light theme
-- [ ] Test on dark theme
-- [ ] Verify error messages display correctly
-- [ ] Check success messages display correctly
+/**
+ * Simple navigation wrapper using route constants
+ */
+@Composable
+fun composableRoute(
+    navigationBack: (() -> Unit)? = null,
+    content: @Composable () -> Unit
+) {
+    // You can add common navigation logic here
+    // For example, back press handling
+    
+    content()
+}
+```
+
+### Option 2: Type-Safe Navigation (Serializable-based)
+
+If using Navigation Compose 2.8.0+:
+
+```kotlin
+package com.yourapp.core.utilities
+
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+
+/**
+ * Type-safe navigation wrapper using @Serializable routes
+ */
+@Composable
+fun composableSafeType(
+    navigationBack: (() -> Unit)? = null,
+    content: @Composable () -> Unit
+) {
+    // You can add common navigation logic here
+    // For example, validation, analytics, etc.
+    
+    content()
+}
+```
+
+### Complete Navigation Example
+
+For a more complete navigation setup:
+
+```kotlin
+package com.yourapp.core.utilities
+
+import androidx.compose.runtime.*
+import androidx.activity.compose.BackHandler
+
+@Composable
+fun composableRoute(
+    navigationBack: (() -> Unit)? = null,
+    enableBackHandler: Boolean = true,
+    content: @Composable () -> Unit
+) {
+    // Handle back press
+    if (navigationBack != null && enableBackHandler) {
+        BackHandler {
+            navigationBack()
+        }
+    }
+    
+    content()
+}
+
+@Composable
+fun composableSafeType(
+    navigationBack: (() -> Unit)? = null,
+    enableBackHandler: Boolean = true,
+    content: @Composable () -> Unit
+) {
+    // Handle back press
+    if (navigationBack != null && enableBackHandler) {
+        BackHandler {
+            navigationBack()
+        }
+    }
+    
+    // Add any type-safe navigation specific logic
+    
+    content()
+}
+```
 
 ---
 
-### Step 10: Build and Test
+## Plugin Configuration
 
-#### Build Plugin
-```bash
-./gradlew clean build
-./gradlew buildPlugin
+### Step 1: Install Plugin
+
+1. Open **Settings/Preferences** → **Plugins**
+2. Search for **"FastCodeGen"**
+3. Click **Install**
+4. Restart IDE
+
+### Step 2: Configure Settings
+
+1. Right-click on any package in your project
+2. Select **New → FastCodeGen**
+3. Click the **⚙️ Settings** button
+
+### Step 3: Configure Base Class Paths
+
+For each field, click the **📁 browse button** and select the corresponding file:
+
+**ViewModel Base Classes:**
+1. **AppViewModel**: Browse to `core/viewmodel/AppViewModel.kt`
+2. **ViewModelConfig**: Browse to `core/viewmodel/ViewModelConfig.kt`
+3. **BaseState**: Browse to `core/viewmodel/BaseInterfaces.kt` (BaseState interface)
+4. **BaseEvent**: Browse to `core/viewmodel/BaseInterfaces.kt` (BaseEvent interface)
+5. **BaseUIState**: Browse to `core/viewmodel/BaseInterfaces.kt` (BaseUIState interface)
+6. **Refreshable**: Browse to `core/viewmodel/BaseInterfaces.kt` (Refreshable interface)
+7. **BaseIntent**: Browse to `core/viewmodel/BaseInterfaces.kt` (BaseIntent interface)
+
+**Navigation Utilities:**
+8. **composableRoute**: Browse to `core/utilities/NavigationUtils.kt`
+9. **composableSafeType**: Browse to `core/utilities/NavigationUtils.kt`
+
+**Optional:**
+10. **Koin Module**: Leave empty or configure if using Koin
+
+### Step 4: Verify Configuration
+
+After browsing, your settings should look like:
+
+```
+AppViewModel:       com.yourapp.core.viewmodel.AppViewModel
+ViewModelConfig:    com.yourapp.core.viewmodel.ViewModelConfig
+BaseState:          com.yourapp.core.viewmodel.BaseState
+BaseEvent:          com.yourapp.core.viewmodel.BaseEvent
+BaseUIState:        com.yourapp.core.viewmodel.BaseUIState
+Refreshable:        com.yourapp.core.viewmodel.Refreshable
+BaseIntent:         com.yourapp.core.viewmodel.BaseIntent
+composableRoute:    com.yourapp.core.utilities.composableRoute
+composableSafeType: com.yourapp.core.utilities.composableSafeType
 ```
 
-The plugin ZIP will be in: `build/distributions/FastCodeGen-1.0.0.zip`
-
-#### Test in IDE
-```bash
-./gradlew runIde
-```
-
-This will open a new IntelliJ instance with your plugin installed.
-
-#### Test Steps:
-1. Create or open a Kotlin project
-2. Right-click on a package
-3. Select "New" → "FastCodeGen"
-4. Test all three generation modes
-5. Verify generated code compiles
-6. Check UI is responsive
-7. Test error scenarios
+Click **OK** to save.
 
 ---
 
-### Step 11: Create Release
+## Dependency Injection Setup
 
-#### 11.1 Git Setup
+### Option 1: Koin Setup
 
-```bash
-git init
-git add .
-git commit -m "Initial release v1.0.0"
-git tag v1.0.0
+#### Add Koin Dependencies
+
+```kotlin
+dependencies {
+    implementation("io.insert-koin:koin-android:3.5.0")
+    implementation("io.insert-koin:koin-androidx-compose:3.5.0")
+}
 ```
 
-#### 11.2 Create GitHub Repository
+#### Create Koin Module
 
-1. Go to https://github.com/new
-2. Repository name: `FastCodeGen`
-3. Description: "IntelliJ IDEA plugin for generating Kotlin MVVM boilerplate code"
-4. Make it public
-5. Push your code:
-   ```bash
-   git remote add origin https://github.com/alfayedoficial/FastCodeGen.git
-   git push -u origin main
-   git push --tags
+Create `di/AppModule.kt`:
+
+```kotlin
+package com.yourapp.di
+
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.dsl.module
+
+val appModule = module {
+    // ViewModels will be registered here
+    // Example:
+    // viewModel { LoginViewModel(get()) }
+}
+
+val useCaseModule = module {
+    // Use Cases will be registered here
+    // Example:
+    // single { AuthenticateUseCase(get()) }
+}
+
+val repositoryModule = module {
+    // Repositories will be registered here
+    // Example:
+    // single<LoginRepo> { LoginRepoImpl(get()) }
+}
+```
+
+#### Initialize Koin
+
+In your `Application` class:
+
+```kotlin
+package com.yourapp
+
+import android.app.Application
+import com.yourapp.di.appModule
+import com.yourapp.di.repositoryModule
+import com.yourapp.di.useCaseModule
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
+
+class App : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        
+        startKoin {
+            androidContext(this@App)
+            modules(
+                appModule,
+                useCaseModule,
+                repositoryModule
+            )
+        }
+    }
+}
+```
+
+### Option 2: Hilt Setup
+
+#### Add Hilt Dependencies
+
+```kotlin
+plugins {
+    id("com.google.dagger.hilt.android") version "2.48"
+    id("com.google.devtools.ksp") version "1.9.20-1.0.14"
+}
+
+dependencies {
+    implementation("com.google.dagger:hilt-android:2.48")
+    ksp("com.google.dagger:hilt-compiler:2.48")
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+}
+```
+
+#### Create Hilt Modules
+
+```kotlin
+package com.yourapp.di
+
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+object AppModule {
+    // Provide dependencies here
+}
+```
+
+---
+
+## First Code Generation
+
+### Test 1: Generate Simple ViewModel
+
+1. Create a test package: `com.yourapp.features.test`
+2. Right-click on the package
+3. Select **New → FastCodeGen → ViewModel State**
+4. Configure:
    ```
-
-#### 11.3 Create GitHub Release
-
-1. Go to your repository
-2. Click "Releases" → "Create a new release"
-3. Tag: `v1.0.0`
-4. Title: `FastCodeGen v1.0.0 - Initial Release`
-5. Description:
-   ```markdown
-   ## 🎉 Initial Release
-   
-   FastCodeGen is a powerful IntelliJ IDEA plugin for generating Kotlin MVVM boilerplate code.
-   
-   ### ✨ Features
-   - ViewModel State generation with configurable options
-   - Repository generation with custom methods
-   - Full Feature generation (ViewModel + Repository)
-   - Smart package detection
-   - Clean code generation following Kotlin conventions
-   
-   ### 📦 Installation
-   Download `FastCodeGen-1.0.0.zip` and install via Settings → Plugins → Install from disk
-   
-   Or wait for JetBrains Marketplace approval!
-   
-   ### 📖 Documentation
-   - [README](README.md)
-   - [User Guide](./USER_GUIDE.md)
+   Feature Name: Test
+   ☐ Enable Events
+   ☐ Enable Refresh
+   ☐ Enable UIState
+   ☐ Include Load Method
+   Use Cases: (empty)
    ```
-6. Upload: `build/distributions/FastCodeGen-1.0.0.zip`
-7. Click "Publish release"
+5. Click **Generate**
+
+**Expected Result:**
+- Files created in `test/viewmodel/`
+- No compilation errors
+- All imports resolved correctly
+
+### Test 2: Generate Simple Screen
+
+1. Right-click on the test package
+2. Select **New → FastCodeGen → Screen**
+3. Configure:
+   ```
+   Feature Name: TestScreen
+   ☐ Has Navigation Back
+   Navigation Type: None
+   ```
+4. Click **Generate**
+
+**Expected Result:**
+- File created: `test/ui/TestScreenScreen.kt`
+- Composable function compiles without errors
+
+### Test 3: Generate Full Feature
+
+1. Right-click on package: `com.yourapp.features.sample`
+2. Select **New → FastCodeGen → Full Feature**
+3. Configure:
+   ```
+   Feature Name: Sample
+   ✅ Generate Screen
+   ✅ Generate ViewModel
+   ✅ Generate Repository
+   
+   Screen: Simple navigation with back
+   ViewModel: All features enabled
+   Repository: 1 method with HttpClient
+   ```
+4. Click **Generate**
+
+**Expected Result:**
+- Complete feature structure created
+- All files compile without errors
+- Proper package structure
 
 ---
 
-### Step 12: Submit to JetBrains Marketplace
+## Verification
 
-#### 12.1 Create Plugin Page
+### Checklist
 
-1. Go to https://plugins.jetbrains.com/
-2. Sign in with JetBrains account
-3. Click "Upload plugin"
-4. Fill in details:
+After setup, verify the following:
 
-**Name:** FastCodeGen
+- [ ] Base classes compile without errors
+- [ ] Navigation utilities are accessible
+- [ ] Plugin settings are saved correctly
+- [ ] Test ViewModel generation successful
+- [ ] Test Screen generation successful
+- [ ] Test Repository generation successful
+- [ ] Generated code has correct imports
+- [ ] Generated code follows your project structure
+- [ ] Dependency injection is working
 
-**Category:** Code tools
+### Common Issues and Solutions
 
-**Organization:** Personal (or your company name)
+#### Issue: Import Errors in Generated Code
 
-**Description:** (Copy from plugin.xml)
+**Problem:** Generated code shows unresolved imports
 
-**Tags:** 
-- kotlin
-- code-generation
-- mvvm
-- clean-architecture
-- viewmodel
-- repository
-- boilerplate
+**Solution:**
+1. Open Settings (⚙️)
+2. Verify each path is correct
+3. Re-browse paths if needed
+4. Ensure base classes are in correct packages
 
-**Plugin Page URL:** `https://github.com/alfayedoficial/FastCodeGen`
+#### Issue: Navigation Utilities Not Found
 
-**Source Code URL:** `https://github.com/alfayedoficial/FastCodeGen`
+**Problem:** Screen generation fails with navigation errors
 
-**Issue Tracker URL:** `https://github.com/alfayedoficial/FastCodeGen/issues`
+**Solution:**
+1. Create `NavigationUtils.kt` in `core/utilities`
+2. Add `composableRoute` and `composableSafeType` functions
+3. Re-configure navigation paths in settings
 
-**Screenshots:** (Upload 3-5 screenshots showing:)
-1. Selection screen
-2. ViewModel configuration screen
-3. Repository configuration screen
-4. Generated code example
-5. Full feature result
+#### Issue: ViewModel Doesn't Compile
 
-#### 12.2 Upload Plugin
+**Problem:** Generated ViewModel has compilation errors
 
-1. Upload `FastCodeGen-1.0.0.zip`
-2. Wait for automated checks
-3. Submit for review
-4. Wait for approval (usually 1-3 business days)
-
----
-
-### Step 13: Promotion
-
-#### LinkedIn Post
-
-```
-🚀 Excited to announce FastCodeGen v1.0.0!
-
-A powerful IntelliJ IDEA plugin that accelerates Kotlin development by generating MVVM boilerplate code automatically.
-
-✨ Features:
-• ViewModel State generation
-• Repository pattern generation
-• Full feature scaffolding
-• Clean Architecture support
-• Smart package detection
-
-Perfect for Android developers, KMM projects, and any Kotlin development.
-
-🔗 Download: [JetBrains Marketplace Link]
-📖 Docs: https://github.com/alfayedoficial/FastCodeGen
-
-#Kotlin #AndroidDev #IntelliJ #CleanArchitecture #MVVM #OpenSource
-```
-
-#### Reddit Posts
-
-**r/Kotlin:**
-```
-Title: [Tool] FastCodeGen - IntelliJ Plugin for Generating Kotlin MVVM Boilerplate
-
-I've created a plugin for IntelliJ IDEA that generates MVVM boilerplate code for Kotlin projects. It includes ViewModel State management, Repository pattern, and full feature scaffolding.
-
-Features:
-- Generates State, Event, UIState, Intent patterns
-- Repository interfaces and implementations
-- Customizable configuration
-- Clean Architecture support
-
-Open source and free to use!
-
-Link: https://github.com/alfayedoficial/FastCodeGen
-
-Would love to hear your feedback!
-```
-
-**r/androiddev:**
-```
-Title: [DEV] New Plugin for Generating Android MVVM Boilerplate - FastCodeGen
-
-Made a plugin to speed up Android development by auto-generating MVVM boilerplate.
-
-Saves time on:
-- ViewModel setup with State/Event/Intent
-- Repository pattern
-- Clean Architecture structure
-
-Free and open source.
-
-Check it out: https://github.com/alfayedoficial/FastCodeGen
-```
+**Solution:**
+1. Check AppViewModel implementation
+2. Ensure all abstract methods are implemented
+3. Verify generics are correctly defined
 
 ---
 
-## ✅ Final Checklist
+## Next Steps
 
-Before publishing, verify:
+Now that your setup is complete:
 
-- [ ] All files are in correct locations
-- [ ] Plugin builds without errors
-- [ ] All tests pass
-- [ ] README is complete with your contact info
-- [ ] USER_GUIDE is comprehensive
-- [ ] plugin.xml has correct version (1.0.0)
-- [ ] plugin.xml has your email and LinkedIn
-- [ ] Plugin icon is added (optional but recommended)
-- [ ] GitHub repository is created and public
-- [ ] Release v1.0.0 is created on GitHub
-- [ ] Plugin ZIP is attached to release
-- [ ] Screenshots are taken for marketplace
-- [ ] JetBrains Marketplace submission is ready
+1. **Read the User Guide** - Learn all features with examples
+2. **Generate Real Features** - Start with a simple feature
+3. **Customize Base Classes** - Adapt to your specific needs
+4. **Share with Team** - Help others set up their environment
+5. **Report Issues** - Contribute feedback for improvements
 
 ---
 
-## 🎉 Congratulations!
+## Additional Resources
 
-You now have a production-ready, professional IntelliJ IDEA plugin!
-
-## 📞 Support
-
-If you need help with any step:
-- Check the documentation again
-- Search JetBrains Plugin SDK docs
-- Ask in JetBrains Platform Slack
-- Contact me via LinkedIn
+- 📖 [README](README.md) - Overview and features
+- 📚 [User Guide](USER_GUIDE.md) - Detailed tutorials
+- ⚡ [Quick Reference](QUICK_REFERENCE.md) - Cheat sheet
+- 📊 [Plugin Summary](PLUGIN_SUMMARY.md) - Feature summary
 
 ---
 
-**Made with ❤️ by Ali Al-Shahat Ali**
+## Support
 
-Good luck with your plugin! 🚀
+Need help with setup?
+- 📧 Email: alialfayed.official@gmail.com
+- 💼 LinkedIn: [alfayedoficial](https://www.linkedin.com/in/alfayedoficial/)
+- 🐛 GitHub: [Report Issues](https://github.com/alfayedoficial/FastCodeGen/issues)
+
+---
+
+**Setup Complete! 🎉**
+
+You're now ready to use FastCodeGen to accelerate your Kotlin development!

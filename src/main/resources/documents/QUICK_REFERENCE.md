@@ -1,102 +1,247 @@
-# FastCodeGen - Quick Reference
+# FastCodeGen Quick Reference
 
-**Version:** 1.0.6 | Last Updated: November 2, 2025
+**Version 1.0.6 - Cheat Sheet**
+
+---
 
 ## 🚀 Quick Start
 
 ```
-1. Configure Settings (⚙️)
-2. Right-click package → New → FastCodeGen
-3. Choose type → Configure → Generate
+1. Settings/Preferences → Plugins → Install "FastCodeGen"
+2. Right-click package → New → FastCodeGen → ⚙️ Settings
+3. Configure all paths using 📁 browse button
+4. Right-click package → New → FastCodeGen → Generate!
 ```
 
 ---
 
-## ⚙️ Settings (NEW in 1.0.6)
+## 📋 Generation Types
 
-### Access Settings
-- Click ⚙️ in FastCodeGen dialog
-- Tools → FastCodeGen Documentation → Settings
-
-### Configure Paths
-Click 📁 to browse and auto-detect package paths
-
-**Required:**
-- AppViewModel
-- ViewModelConfig
-- BaseState
-- BaseEvent
-- BaseUIState
-- Refreshable
-- BaseIntent
-
-**Optional:**
-- Koin Module
+| Type | Purpose | Generated Files |
+|------|---------|----------------|
+| **Screen** | Compose UI | `ui/FeatureScreen.kt` |
+| **ViewModel State** | Business logic | `viewmodel/state/*.kt`, `viewmodel/FeatureViewModel.kt` |
+| **Repository** | Data layer | `domain/repo/*.kt`, `data/repo/*.kt` |
+| **Full Feature** | Complete feature | All of the above |
 
 ---
 
-## 🎯 Generation Types
+## ⚙️ Settings (Required Paths)
 
-### ViewModel State
+### ViewModel Base Classes
 ```
-✓ State, Event, UIState, Intent
-✓ ViewModel class
-✗ Repository
-```
-
-### Repository
-```
-✗ ViewModel
-✓ Repository interface
-✓ Repository implementation
+AppViewModel:       com.myapp.core.viewmodel.AppViewModel
+ViewModelConfig:    com.myapp.core.viewmodel.ViewModelConfig
+BaseState:          com.myapp.core.viewmodel.BaseState
+BaseEvent:          com.myapp.core.viewmodel.BaseEvent
+BaseUIState:        com.myapp.core.viewmodel.BaseUIState
+Refreshable:        com.myapp.core.viewmodel.Refreshable
+BaseIntent:         com.myapp.core.viewmodel.BaseIntent
 ```
 
-### Full Feature
+### Navigation Utilities
 ```
-✓ ViewModel + State
-✓ Repository
-✓ Complete feature
+composableRoute:      com.myapp.core.utilities.composableRoute
+composableSafeType:   com.myapp.core.utilities.composableSafeType
+```
+
+### Optional
+```
+Koin Module:        org.koin.core.module.Module
 ```
 
 ---
 
-## 🔧 Configuration Options
+## 🎨 Screen Generation Options
 
-| Option | Purpose | Use When |
-|--------|---------|----------|
-| **Events** | One-time UI actions | Toast, Navigation |
-| **Refresh** | Pull-to-refresh | Lists, Data screens |
-| **UIState** | UI state management | Complex UI |
-| **Use Cases** | Dependencies | Business logic |
-| **HTTP Client** | Network calls | Repository needs API |
+### Navigation Types
+
+| Type | When to Use | Parameters |
+|------|-------------|------------|
+| **None** | Simple screen, no navigation | No params |
+| **Simple** | Basic navigation with route | No params |
+| **Type-Safe** | Type-safe navigation | Yes, define params |
+
+### Navigation Parameters Format
+```
+Name: userId
+Type: String
+
+Name: isEditable
+Type: Boolean
+
+Name: itemId
+Type: Long
+```
+
+### Common Configurations
+
+**No Navigation:**
+```
+☐ Has Navigation Back
+Navigation Type: None
+```
+
+**Simple Navigation:**
+```
+✅ Has Navigation Back
+Navigation Type: Simple
+```
+
+**Type-Safe with Params:**
+```
+✅ Has Navigation Back
+Navigation Type: Type-Safe
+Parameters: userId: String, mode: Int
+```
 
 ---
 
-## 📝 Naming Conventions
+## 🎯 ViewModel Configuration
 
-**Feature Name Format:**
+### Checkboxes
+
+| Option | Purpose | When to Enable |
+|--------|---------|----------------|
+| **Enable Events** | One-time UI actions | Navigation, toasts, dialogs |
+| **Enable Refresh** | Pull-to-refresh | User-triggered reload |
+| **Enable UIState** | UI-specific state | Form fields, UI flags |
+| **Include Load Method** | Auto initialization | Load data on creation |
+
+### Use Cases Format
 ```
-✅ Login          → LoginViewModel
-✅ UserProfile    → UserProfileViewModel  
-✅ Settings       → SettingsViewModel
-❌ login_screen   (use PascalCase)
-❌ Screen1        (use descriptive names)
+Single: GetUserUseCase
+Multiple: GetUserUseCase, UpdateUserUseCase, DeleteUserUseCase
+```
+
+### Common Patterns
+
+**Minimal ViewModel:**
+```
+☐ Enable Events
+☐ Enable Refresh
+☐ Enable UIState
+☐ Include Load Method
+Use Cases: (empty)
+```
+
+**Full-Featured ViewModel:**
+```
+✅ Enable Events
+✅ Enable Refresh
+✅ Enable UIState
+✅ Include Load Method
+Use Cases: GetDataUseCase, UpdateDataUseCase
+```
+
+**Form Screen:**
+```
+☐ Enable Events
+☐ Enable Refresh
+✅ Enable UIState (for form fields)
+☐ Include Load Method
 ```
 
 ---
 
-## 🎨 Generated Structure
+## 📦 Repository Configuration
 
-### ViewModel State
+### Method Definition Format
+
+```
+Method Name:    getUser
+Return Type:    Flow<User>
+Parameters:     userId: String
+
+Method Name:    updateProfile
+Return Type:    Flow<Unit>
+Parameters:     userId: String, profile: ProfileUpdate
+
+Method Name:    searchItems
+Return Type:    Flow<List<Item>>
+Parameters:     query: String, filters: Map<String, String>
+```
+
+### Optional Fields
+- **Method Name**: Required (leave others empty to skip method)
+- **Return Type**: Optional (defaults to `Unit`)
+- **Parameters**: Optional (empty for no params)
+
+### Common Patterns
+
+**CRUD Operations:**
+```
+1. getItem(id: String) → Flow<Item>
+2. createItem(item: Item) → Flow<Item>
+3. updateItem(id: String, item: Item) → Flow<Unit>
+4. deleteItem(id: String) → Flow<Boolean>
+```
+
+**Search/Filter:**
+```
+1. search(query: String) → Flow<List<Item>>
+2. filter(filters: Map<String, String>) → Flow<List<Item>>
+3. sort(sortBy: SortType) → Flow<List<Item>>
+```
+
+---
+
+## 🏗️ Full Feature Combinations
+
+### Common Scenarios
+
+**Complete Feature:**
+```
+✅ Generate Screen
+✅ Generate ViewModel
+✅ Generate Repository
+```
+
+**UI Only:**
+```
+✅ Generate Screen
+✅ Generate ViewModel
+☐ Generate Repository
+```
+
+**Backend Service:**
+```
+☐ Generate Screen
+✅ Generate ViewModel
+✅ Generate Repository
+```
+
+**Static Screen:**
+```
+✅ Generate Screen
+☐ Generate ViewModel
+☐ Generate Repository
+```
+
+---
+
+## 📁 Generated File Structure
+
+### Screen Only
+```
+feature/
+└── ui/
+    └── FeatureScreen.kt
+```
+
+### ViewModel Only
 ```
 feature/
 └── viewmodel/
     ├── state/
-    │   └── FeatureState.kt
+    │   ├── FeatureState.kt
+    │   ├── FeatureEvent.kt      (if enabled)
+    │   ├── FeatureUIState.kt    (if enabled)
+    │   └── FeatureIntent.kt
     └── FeatureViewModel.kt
 ```
 
-### Repository
+### Repository Only
 ```
 feature/
 ├── domain/
@@ -110,243 +255,217 @@ feature/
 ### Full Feature
 ```
 feature/
+├── ui/
+│   └── FeatureScreen.kt         (if enabled)
+├── viewmodel/
+│   ├── state/
+│   │   └── FeatureState.kt
+│   └── FeatureViewModel.kt      (if enabled)
 ├── domain/
 │   └── repo/
-│       └── FeatureRepo.kt
-├── data/
-│   └── repo/
-│       └── FeatureRepoImpl.kt
-└── viewmodel/
-    ├── state/
-    │   └── FeatureState.kt
-    └── FeatureViewModel.kt
+│       └── FeatureRepo.kt       (if enabled)
+└── data/
+    └── repo/
+        └── FeatureRepoImpl.kt   (if enabled)
 ```
 
 ---
 
-## 💡 Tips & Tricks
+## 🎯 Common Use Cases
 
-### Settings
-```bash
-# First time setup
-⚙️ → 📁 Browse for each base class → Save
+### 1. Login Screen
+```
+Type: Full Feature
+Name: Login
 
-# Verify settings
-Generated code should compile immediately
+Screen:
+  ☐ Navigation Back
+  Type: Simple
+
+ViewModel:
+  ✅ Events (for navigation)
+  ☐ Refresh
+  ✅ UIState (for email/password)
+  ✅ Load Method
+  Use Cases: AuthenticateUseCase
+
+Repository:
+  ✅ HttpClient
+  - login(email: String, password: String) → Flow<AuthResult>
 ```
 
-### Optional Methods (NEW!)
-```kotlin
-// All valid:
-fun getData(): Flow<Data>              // Normal
-fun getData()                          // No return (Unit)
-fun getData(id: String): Flow<Data>    // With params
-fun refresh()                          // No params, no return
+### 2. Profile Detail
+```
+Type: Full Feature
+Name: Profile
+
+Screen:
+  ✅ Navigation Back
+  Type: Type-Safe
+  Params: userId: String
+
+ViewModel:
+  ✅ Events
+  ✅ Refresh
+  ✅ UIState
+  ✅ Load Method
+  Use Cases: GetProfileUseCase, UpdateProfileUseCase
+
+Repository:
+  ✅ HttpClient
+  - getProfile(userId: String) → Flow<Profile>
+  - updateProfile(userId: String, data: ProfileData) → Flow<Unit>
 ```
 
-### Multiple Use Cases
+### 3. Settings Screen
 ```
-Separate with commas:
-Authentication, Validation, Analytics
+Type: Screen + ViewModel
+Name: Settings
+
+Screen:
+  ✅ Navigation Back
+  Type: Simple
+
+ViewModel:
+  ☐ Events
+  ☐ Refresh
+  ✅ UIState (for preferences)
+  ☐ Load Method
+  Use Cases: (none)
+
+Repository: Not generated
 ```
 
-### Batch Generation
+### 4. Data Sync Service
 ```
-1. Generate Feature A
-2. Stay in same location
-3. Right-click → New → FastCodeGen
-4. Generate Feature B
+Type: ViewModel + Repository
+Name: Sync
+
+ViewModel:
+  ☐ Events
+  ☐ Refresh
+  ☐ UIState
+  ✅ Load Method
+  Use Cases: SyncDataUseCase
+
+Repository:
+  ✅ HttpClient
+  - syncData() → Flow<SyncResult>
+  - getLastSyncTime() → Flow<Long>
+
+Screen: Not generated
+```
+
+### 5. Product List
+```
+Type: Full Feature
+Name: ProductList
+
+Screen:
+  ✅ Navigation Back
+  Type: Type-Safe
+  Params: categoryId: String
+
+ViewModel:
+  ✅ Events (for detail navigation)
+  ✅ Refresh (pull-to-refresh)
+  ✅ UIState (filters, search)
+  ✅ Load Method
+  Use Cases: GetProductsUseCase, SearchProductsUseCase
+
+Repository:
+  ✅ HttpClient
+  - getProducts(categoryId: String, page: Int) → Flow<List<Product>>
+  - searchProducts(query: String) → Flow<List<Product>>
 ```
 
 ---
 
-## ⌨️ Keyboard Shortcuts
+## 🔧 Keyboard Shortcuts
 
-| Action | Shortcut |
-|--------|----------|
-| Navigate fields | Tab |
-| Confirm | Enter |
-| Cancel | Esc |
-| Find FastCodeGen | Ctrl/Cmd + Shift + A |
+| Action | Windows/Linux | macOS |
+|--------|---------------|-------|
+| Open FastCodeGen | `Alt+Insert` → FastCodeGen | `Cmd+N` → FastCodeGen |
+| Open Settings | Click ⚙️ in dialog | Click ⚙️ in dialog |
+| Generate | `Enter` or `Alt+G` | `Enter` or `Cmd+G` |
+| Cancel | `Esc` | `Esc` |
+
+---
+
+## ⚡ Pro Tips
+
+### Naming Conventions
+```
+✅ Good:
+  - UserProfile
+  - ProductDetail
+  - CheckoutPayment
+
+❌ Avoid:
+  - user_profile
+  - productdetail
+  - Checkout-Payment
+```
+
+### Use Case Naming
+```
+✅ Good:
+  - GetUserDataUseCase
+  - UpdateProfileUseCase
+  - DeleteAccountUseCase
+
+❌ Avoid:
+  - getUserDataUseCase (lowercase)
+  - GetUserData (missing UseCase suffix)
+  - UserUseCase (not descriptive)
+```
+
+### Repository Methods
+```
+✅ Good:
+  - getUser(userId: String): Flow<User>
+  - updateProfile(id: String, data: ProfileData): Flow<Unit>
+
+❌ Avoid:
+  - GetUser (PascalCase)
+  - get_user (snake_case)
+  - getData(id: Any): Flow<Any> (too generic)
+```
 
 ---
 
 ## 🐛 Quick Troubleshooting
 
-### Import Errors?
-```
-1. Check settings (⚙️)
-2. Click 📁 to re-detect paths
-3. Verify base classes exist
-4. Clean & rebuild project
-```
-
-### Plugin Not Showing?
-```
-1. Check IDE version (2024.2+)
-2. Enable Kotlin plugin
-3. Right-click on package (not file)
-4. Invalidate caches if needed
-```
-
-### Settings Not Saving?
-```
-1. Fill all required fields
-2. Click OK (not Cancel)
-3. Restart IDE if needed
-```
+| Problem | Quick Fix |
+|---------|-----------|
+| "Settings not configured" | Click ⚙️ → Configure all paths → OK |
+| Import errors | Verify settings paths match your classes |
+| Screen not generated | Check Compose dependencies |
+| Navigation errors | Configure composableRoute/composableSafeType |
+| Use case errors | Check naming (PascalCase + UseCase suffix) |
+| Plugin menu missing | Right-click on package (not file) |
 
 ---
 
-## 📋 Code Templates
+## 📚 Related Documentation
 
-### State
-```kotlin
-sealed class FeatureState : BaseState {
-    data object Idle : FeatureState()
-    data object Loading : FeatureState()
-    data object Success : FeatureState()
-    data class Error(val message: String) : FeatureState()
-}
-```
-
-### Event
-```kotlin
-sealed class FeatureEvent : BaseEvent {
-    data object Loading : FeatureEvent()
-    data object Success : FeatureEvent()
-    data class Error(val message: String) : FeatureEvent()
-}
-```
-
-### UIState
-```kotlin
-data class FeatureUIState(
-    val isRefresh: Boolean = false,
-    val isLoading: Boolean = false,
-) : BaseUIState, Refreshable {
-    override fun withRefresh(isRefresh: Boolean): BaseUIState {
-        return copy(isRefresh = isRefresh)
-    }
-}
-```
-
-### Intent
-```kotlin
-sealed class FeatureIntent : BaseIntent {
-    data object ClearState : FeatureIntent()
-    data object LoadFeature : FeatureIntent()
-    data object RefreshRequest : FeatureIntent()
-}
-```
-
-### ViewModel
-```kotlin
-class FeatureViewModel : AppViewModel<
-    FeatureState,
-    FeatureEvent,
-    FeatureUIState,
-    FeatureIntent
->(
-    initialState = FeatureState.Idle,
-    initialUIState = FeatureUIState(),
-    config = ViewModelConfig(
-        enableRefresh = true,
-        enableEvents = true
-    )
-) {
-    override fun handleIntent(intent: FeatureIntent) {
-        when (intent) {
-            is FeatureIntent.ClearState -> setState(FeatureState.Idle)
-            is FeatureIntent.LoadFeature -> loadFeature()
-            is FeatureIntent.RefreshRequest -> refreshRequest { loadFeature() }
-        }
-    }
-    
-    override fun createErrorState(message: String): FeatureState {
-        return FeatureState.Error(message)
-    }
-    
-    override fun createErrorEvent(message: String): FeatureEvent {
-        return FeatureEvent.Error(message)
-    }
-}
-```
-
-### Repository Interface
-```kotlin
-interface FeatureRepo {
-    fun getData(id: String): Flow<Data>
-    fun updateData(data: Data): Flow<Unit>
-}
-```
-
-### Repository Implementation
-```kotlin
-class FeatureRepoImpl(
-    private val httpClient: HttpClient
-) : FeatureRepo {
-    override fun getData(id: String): Flow<Data> {
-        TODO("Not yet implemented")
-    }
-    
-    override fun updateData(data: Data): Flow<Unit> {
-        TODO("Not yet implemented")
-    }
-}
-```
+- 📖 [README](README.md) - Complete overview
+- 📚 [User Guide](USER_GUIDE.md) - Detailed tutorials
+- 🔧 [Implementation Steps](IMPLEMENTATION_STEPS.md) - Setup guide
+- 📊 [Plugin Summary](PLUGIN_SUMMARY.md) - Feature overview
+- 📑 [Index](INDEX.md) - All documentation
 
 ---
 
-## 🎯 Best Practices
+## 🔗 Quick Links
 
-### DO ✅
-- Configure settings before first use
-- Use descriptive feature names
-- Add only needed options
-- Keep methods focused
-- Generate in correct package
-
-### DON'T ❌
-- Skip settings configuration
-- Use generic names (Screen1, Test)
-- Enable all options unnecessarily
-- Create too many methods at once
-- Generate in wrong location
+- **Settings**: Tools → FastCodeGen Documentation → Settings
+- **Help Menu**: 📚 button in FastCodeGen dialog
+- **GitHub**: github.com/alfayedoficial/FastCodeGen
+- **Email**: alialfayed.official@gmail.com
 
 ---
 
-## 📞 Quick Help
+**Version 1.0.6** | Last Updated: November 2025
 
-### Documentation
-- **📚 Help Button** - In dialog
-- **Tools Menu** - FastCodeGen Documentation
-- **README** - Full guide
-- **User Guide** - Tutorials
-
-### Contact
-- Email: alialfayed.official@gmail.com
-- LinkedIn: [alfayedoficial](https://www.linkedin.com/in/alfayedoficial/)
-
----
-
-## 🆕 What's New in 1.0.6
-
-✨ **Settings System** - Configure base class paths  
-📁 **Browse Buttons** - Auto-detect package paths  
-🎨 **Refactored UI** - Cleaner, more organized  
-⚡ **Optional Methods** - Flexible repository generation  
-🔧 **Dynamic Imports** - Works with any project  
-📚 **Better Docs** - Comprehensive guides
-
----
-
-<div align="center">
-
-**FastCodeGen v1.0.6**
-
-*Quick. Clean. Kotlin.*
-
-[README](README.md) | [User Guide](USER_GUIDE.md) | [Implementation](IMPLEMENTATION_STEPS.md)
-
-</div>
+*For detailed explanations and examples, see the [User Guide](USER_GUIDE.md)*
