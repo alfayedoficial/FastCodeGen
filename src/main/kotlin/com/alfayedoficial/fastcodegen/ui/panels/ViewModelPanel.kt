@@ -52,11 +52,11 @@ class ViewModelPanel(
         panel.add(Box.createVerticalStrut(UIConstants.MEDIUM_SPACING))
 
         // Use Cases
-        val useCasesLabel = JLabel(UIConstants.USE_CASES_LABEL + " (Optional)")
+        val useCasesLabel = JLabel(UIConstants.USE_CASES_LABEL + UIConstants.OPTIONAL_SUFFIX)
         useCasesLabel.alignmentX = JComponent.LEFT_ALIGNMENT
         panel.add(useCasesLabel)
         panel.add(Box.createVerticalStrut(UIConstants.SMALL_SPACING))
-        useCasesField.preferredSize = Dimension(400, 25)
+        useCasesField.preferredSize = Dimension(400, 35)
         useCasesField.alignmentX = JComponent.LEFT_ALIGNMENT
         panel.add(useCasesField)
 

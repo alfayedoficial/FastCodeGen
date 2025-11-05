@@ -2,6 +2,8 @@ package com.alfayedoficial.fastcodegen.generator
 
 import com.alfayedoficial.fastcodegen.settings.FastCodeGenSettings
 import com.alfayedoficial.fastcodegen.utils.FileUtils.createKotlinFile
+import com.alfayedoficial.fastcodegen.utils.StringUtils.toCamelCase
+import com.alfayedoficial.fastcodegen.utils.StringUtils.toPascalCase
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDirectory
 
@@ -262,12 +264,4 @@ class ViewModelStateGenerator(private val project: Project, private val baseDire
       return ""
    }
 
-   private fun toCamelCase(input: String): String {
-      return input.replace(Regex("[^a-zA-Z0-9]"), "").lowercase()
-   }
-
-   private fun toPascalCase(input: String): String {
-      val cleaned = input.replace(Regex("[^a-zA-Z0-9]"), "").lowercase()
-      return cleaned.replaceFirstChar { it.uppercase() }
-   }
 }

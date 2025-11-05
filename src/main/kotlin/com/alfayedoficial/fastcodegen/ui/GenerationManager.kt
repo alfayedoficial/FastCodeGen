@@ -2,6 +2,9 @@ package com.alfayedoficial.fastcodegen.ui
 
 import com.alfayedoficial.fastcodegen.generator.FeatureGenerator
 import com.alfayedoficial.fastcodegen.generator.RepoGenerator
+import com.alfayedoficial.fastcodegen.generator.ScreenGenerator
+import com.alfayedoficial.fastcodegen.generator.ScreenGenerator.NavParameter
+import com.alfayedoficial.fastcodegen.generator.ScreenGenerator.NavigationType
 import com.alfayedoficial.fastcodegen.generator.ViewModelStateGenerator
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
@@ -15,7 +18,23 @@ class GenerationManager(
     private val project: Project,
     private val directory: PsiDirectory
 ) {
-    
+
+    fun generateScreen(
+        featureName: String,
+        hasNavigationBack: Boolean,
+        navigationType: NavigationType,
+        navParameters: List<NavParameter>
+    ): Boolean {
+        return executeGeneration("Screen", featureName) {
+            ScreenGenerator(project, directory).generate(
+                featureName = featureName,
+                hasNavigationBack = hasNavigationBack,
+                navigationType = navigationType,
+                navParameters = navParameters
+            )
+        }
+    }
+
     fun generateViewModel(
         featureName: String,
         enableEvents: Boolean,
@@ -55,17 +74,29 @@ class GenerationManager(
         enableUIState: Boolean,
         useCases: List<String>,
         methods: List<RepoGenerator.RepoMethod>,
-        needsHttpClient: Boolean
+        needsHttpClient: Boolean,
+        generateScreen: Boolean,
+        hasNavigationBack: Boolean,
+        navigationType: NavigationType,
+        navParameters: List<NavParameter>,
+        generateViewModel: Boolean,
+        generateRepository: Boolean
     ): Boolean {
         return executeGeneration("Full Feature", featureName) {
             FeatureGenerator(project, directory).generate(
                 featureName,
+                generateViewModel,
                 enableEvents,
                 enableRefresh,
                 enableUIState,
                 useCases,
+                generateRepository,
                 methods,
-                needsHttpClient
+                needsHttpClient,
+                generateScreen,
+                hasNavigationBack,
+                navigationType,
+                navParameters
             )
         }
     }

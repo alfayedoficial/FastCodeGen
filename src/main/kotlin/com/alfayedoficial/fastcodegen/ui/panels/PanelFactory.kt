@@ -22,6 +22,7 @@ import javax.swing.JTextField
 object PanelFactory {
 
     fun createSelectionPanel(
+        screenRadio: JRadioButton,
        viewModelRadio: JRadioButton,
        repoRadio: JRadioButton,
        featureRadio: JRadioButton,
@@ -49,18 +50,23 @@ object PanelFactory {
 
         // Radio buttons
         val buttonGroup = ButtonGroup()
+        buttonGroup.add(screenRadio)
         buttonGroup.add(viewModelRadio)
         buttonGroup.add(repoRadio)
         buttonGroup.add(featureRadio)
 
+        screenRadio.toolTipText = "Generate screen navigation"
         viewModelRadio.toolTipText = "Generate ViewModel with State, Event, UIState, and Intent"
         repoRadio.toolTipText = "Generate Repository interface and implementation"
         featureRadio.toolTipText = "Generate complete feature with ViewModel and Repository"
 
+        screenRadio.alignmentX = JComponent.LEFT_ALIGNMENT
         viewModelRadio.alignmentX = JComponent.LEFT_ALIGNMENT
         repoRadio.alignmentX = JComponent.LEFT_ALIGNMENT
         featureRadio.alignmentX = JComponent.LEFT_ALIGNMENT
 
+        centerPanel.add(screenRadio)
+        centerPanel.add(Box.createVerticalStrut(UIConstants.MEDIUM_SPACING))
         centerPanel.add(viewModelRadio)
         centerPanel.add(Box.createVerticalStrut(UIConstants.MEDIUM_SPACING))
         centerPanel.add(repoRadio)
@@ -113,10 +119,10 @@ object PanelFactory {
         parent.add(component)
     }
 
-    fun createNamePanel(label: String, textField: JTextField): JPanel {
+    fun createNamePanel(label: String, textField: JComponent): JPanel {
         val namePanel = JPanel(FlowLayout(FlowLayout.LEFT, 5, 0))
         namePanel.add(JLabel(label))
-        textField.preferredSize = Dimension(300, 25)
+        textField.preferredSize = Dimension(400, 35)
         namePanel.add(textField)
         namePanel.alignmentX = JComponent.LEFT_ALIGNMENT
         return namePanel

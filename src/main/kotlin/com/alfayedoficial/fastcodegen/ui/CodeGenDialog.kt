@@ -27,11 +27,13 @@ class CodeGenDialog(
    private val nextButton = JButton("Next →")
 
    // Selection radio buttons
+   private val screenRadio = JRadioButton("Screen")
    private val viewModelRadio = JRadioButton("ViewModel State")
    private val repoRadio = JRadioButton("Repository")
    private val featureRadio = JRadioButton("Full Feature")
 
    // Panel instances
+   private val screenPanel = ScreenPanel(onBack = ::showSelection)
    private val viewModelPanel = ViewModelPanel(onBack = ::showSelection)
    private val repositoryPanel = RepositoryPanel(onBack = ::showSelection)
    private val featurePanel = FeaturePanel(onBack = ::showSelection)
@@ -50,6 +52,7 @@ class CodeGenDialog(
 
    override fun createCenterPanel(): JComponent {
       cardPanel.add(createSelectionPanel(), "selection")
+      cardPanel.add(screenPanel.createPanel(), "screen")
       cardPanel.add(viewModelPanel.createPanel(), "viewmodel")
       cardPanel.add(repositoryPanel.createPanel(), "repo")
       cardPanel.add(featurePanel.createPanel(), "feature")
@@ -92,6 +95,7 @@ class CodeGenDialog(
 
    private fun createSelectionPanel(): JPanel {
       return PanelFactory.createSelectionPanel(
+         screenRadio,
          viewModelRadio,
          repoRadio,
          featureRadio,
@@ -150,6 +154,7 @@ class CodeGenDialog(
    private fun setupListeners() {
       nextButton.addActionListener {
          when {
+            screenRadio.isSelected -> showPanel("screen")
             viewModelRadio.isSelected -> showPanel("viewmodel")
             repoRadio.isSelected -> showPanel("repo")
             featureRadio.isSelected -> showPanel("feature")
@@ -157,6 +162,7 @@ class CodeGenDialog(
       }
 
       // Enable OK button when feature name is entered
+      screenPanel.featureNameField.document.addDocumentListener(SimpleDocumentListener { checkOKEnabled() })
       viewModelPanel.featureNameField.document.addDocumentListener(SimpleDocumentListener { checkOKEnabled() })
       repositoryPanel.featureNameField.document.addDocumentListener(SimpleDocumentListener { checkOKEnabled() })
       featurePanel.featureNameField.document.addDocumentListener(SimpleDocumentListener { checkOKEnabled() })
@@ -176,6 +182,7 @@ class CodeGenDialog(
 
    private fun checkOKEnabled() {
       isOKActionEnabled = when {
+         screenRadio.isSelected -> screenPanel.getFeatureName().isNotBlank()
          viewModelRadio.isSelected -> viewModelPanel.getFeatureName().isNotBlank()
          repoRadio.isSelected -> repositoryPanel.getFeatureName().isNotBlank()
          featureRadio.isSelected -> featurePanel.getFeatureName().isNotBlank()
@@ -192,6 +199,13 @@ class CodeGenDialog(
       }
 
       val success = when {
+         screenRadio.isSelected -> { generationManager.generateScreen(
+            screenPanel.getFeatureName(),
+            screenPanel.hasNavigationBack(),
+            screenPanel.getNavigationType(),
+            screenPanel.getNavParameters()
+            )
+         }
          viewModelRadio.isSelected -> generationManager.generateViewModel(
             viewModelPanel.getFeatureName(),
             viewModelPanel.isEventsEnabled(),
@@ -205,13 +219,19 @@ class CodeGenDialog(
             repositoryPanel.isHttpClientEnabled()
          )
          featureRadio.isSelected -> generationManager.generateFeature(
-            featurePanel.getFeatureName(),
-            featurePanel.isEventsEnabled(),
-            featurePanel.isRefreshEnabled(),
-            featurePanel.isUiStateEnabled(),
-            featurePanel.getUseCases(),
-            featurePanel.getMethods(),
-            featurePanel.isHttpClientEnabled()
+            featureName = featurePanel.getFeatureName(),
+            generateViewModel = featurePanel.shouldGenerateViewModel(),
+            enableEvents = featurePanel.isEventsEnabled(),
+            enableRefresh = featurePanel.isRefreshEnabled(),
+            enableUIState = featurePanel.isUiStateEnabled(),
+            useCases = featurePanel.getUseCases(),
+            generateRepository = featurePanel.shouldGenerateRepository(),
+            methods = featurePanel.getMethods(),
+            needsHttpClient = featurePanel.isHttpClientEnabled(),
+            generateScreen = featurePanel.shouldGenerateScreen(),
+            hasNavigationBack = featurePanel.hasNavigationBack(),
+            navigationType = featurePanel.getNavigationType(),
+            navParameters = featurePanel.getNavParameters()
          )
          else -> false
       }

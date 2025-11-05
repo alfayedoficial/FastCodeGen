@@ -1,5 +1,6 @@
 package com.alfayedoficial.fastcodegen.generator
 
+import com.alfayedoficial.fastcodegen.utils.StringUtils.toPascalCase
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.psi.PsiDirectory
@@ -166,8 +167,4 @@ class RepoGenerator(
         return ""
     }
     
-    private fun toPascalCase(input: String): String {
-        val cleaned = input.replace(Regex("[^a-zA-Z0-9]"), "").lowercase()
-        return cleaned.replaceFirstChar { it.uppercase() }
-    }
 }

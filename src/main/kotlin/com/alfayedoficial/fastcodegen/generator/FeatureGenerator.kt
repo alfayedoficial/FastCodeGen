@@ -7,33 +7,55 @@ class FeatureGenerator(
     private val project: Project,
     private val baseDirectory: PsiDirectory
 ) {
-    
+
     fun generate(
         featureName: String,
         // ViewModel config
+        generateViewModel: Boolean = true,
         enableEvents: Boolean,
         enableRefresh: Boolean,
         enableUIState: Boolean,
         useCases: List<String>,
         // Repo config
-        repoMethods: List<RepoGenerator.RepoMethod>,
-        needsHttpClient: Boolean
+        generateRepository: Boolean = true,
+        methods: List<RepoGenerator.RepoMethod>,
+        needsHttpClient: Boolean,
+        // Screen config
+        generateScreen: Boolean = false,
+        hasNavigationBack: Boolean = true,
+        navigationType: ScreenGenerator.NavigationType = ScreenGenerator.NavigationType.NONE,
+        navParameters: List<ScreenGenerator.NavParameter> = emptyList()
     ) {
         println("=== Starting Full Feature generation ===")
         println("Feature: $featureName")
-        
+
+        // Generate Screen (optional)
+        if (generateScreen) {
+            println("Generating Screen...")
+            val screenGenerator = ScreenGenerator(project, baseDirectory)
+            screenGenerator.generate(
+                featureName = featureName,
+                hasNavigationBack = hasNavigationBack,
+                navigationType = navigationType,
+                navParameters = navParameters,
+                injectViewModel = generateViewModel  // INJECT IF VIEWMODEL IS GENERATED
+            )
+        }
+
         // Generate ViewModel State
-        println("Generating ViewModel State...")
-        val viewModelGenerator = ViewModelStateGenerator(project, baseDirectory)
-        viewModelGenerator.generate(featureName, enableEvents, enableRefresh, enableUIState, useCases)
-        
+        if (generateViewModel) {
+            println("Generating ViewModel State...")
+            val viewModelGenerator = ViewModelStateGenerator(project, baseDirectory)
+            viewModelGenerator.generate(featureName, enableEvents, enableRefresh, enableUIState, useCases)
+        }
+
         // Generate Repository
-        if (repoMethods.isNotEmpty()) {
+        if (generateRepository && methods.isNotEmpty()) {
             println("Generating Repository...")
             val repoGenerator = RepoGenerator(project, baseDirectory)
-            repoGenerator.generate(featureName, repoMethods, needsHttpClient)
+            repoGenerator.generate(featureName, methods, needsHttpClient)
         }
-        
+
         println("=== Full Feature generation complete ===")
     }
 }
