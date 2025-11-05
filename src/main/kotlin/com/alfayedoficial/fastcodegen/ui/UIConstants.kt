@@ -45,6 +45,7 @@ object UIConstants {
     const val ENABLE_EVENTS_LABEL = "Enable Events"
     const val ENABLE_REFRESH_LABEL = "Enable Refresh"
     const val ENABLE_UISTATE_LABEL = "Enable UIState"
+    const val INCLUDE_LOAD_METHOD_LABEL = "include Load Method"
     const val NEEDS_HTTP_CLIENT_LABEL = "Needs HttpClient"
 
     // Navigation Types
@@ -89,6 +90,7 @@ object UIConstants {
     const val EVENTS_TOOLTIP = "Enable events for one-time UI actions (navigation, toasts, etc.)"
     const val REFRESH_TOOLTIP = "Enable refresh for pull-to-refresh functionality"
     const val UISTATE_TOOLTIP = "Enable UIState for UI-specific data (form fields, loading states, etc.)"
+    const val INCLUDE_LOADING_METHOD_TOOLTIP = "Include loading method"
     const val USE_CASES_TOOLTIP = "Enter use case names separated by commas (e.g., GetUser, UpdateProfile)"
 
     // Tooltips - Repository

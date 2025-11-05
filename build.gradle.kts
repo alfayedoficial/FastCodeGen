@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.alfayedoficial"
-version = "1.0.7"
+version = "1.0.6"
 
 repositories {
    mavenCentral()
@@ -18,7 +18,7 @@ repositories {
 
 dependencies {
    intellijPlatform {
-      create("IC", "2024.2")
+      create("IC", "2025.1")
       bundledPlugin("org.jetbrains.kotlin")
       testFramework(org.jetbrains.intellij.platform.gradle.TestFrameworkType.Platform)
    }

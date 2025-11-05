@@ -211,6 +211,7 @@ class CodeGenDialog(
             viewModelPanel.isEventsEnabled(),
             viewModelPanel.isRefreshEnabled(),
             viewModelPanel.isUiStateEnabled(),
+            viewModelPanel.isIncludeLoadMethod(),
             viewModelPanel.getUseCases()
          )
          repoRadio.isSelected -> generationManager.generateRepository(
@@ -224,6 +225,7 @@ class CodeGenDialog(
             enableEvents = featurePanel.isEventsEnabled(),
             enableRefresh = featurePanel.isRefreshEnabled(),
             enableUIState = featurePanel.isUiStateEnabled(),
+            includeLoadMethod = featurePanel.isIncludeLoadMethod(),
             useCases = featurePanel.getUseCases(),
             generateRepository = featurePanel.shouldGenerateRepository(),
             methods = featurePanel.getMethods(),

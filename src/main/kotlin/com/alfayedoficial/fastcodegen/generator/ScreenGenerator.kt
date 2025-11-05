@@ -1,5 +1,6 @@
 package com.alfayedoficial.fastcodegen.generator
 
+import com.alfayedoficial.fastcodegen.settings.FastCodeGenSettings
 import com.alfayedoficial.fastcodegen.utils.StringUtils
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
@@ -10,6 +11,8 @@ class ScreenGenerator(
    private val project: Project,
    private val baseDirectory: PsiDirectory
 ) {
+
+   private val settings = FastCodeGenSettings.getInstance(project)
 
    enum class NavigationType {
       NONE,           // No navigation file
@@ -27,7 +30,7 @@ class ScreenGenerator(
       hasNavigationBack: Boolean,
       navigationType: NavigationType,
       navParameters: List<NavParameter>,
-      injectViewModel: Boolean = false  // NEW PARAMETER
+      injectViewModel: Boolean = false
    ) {
       println("=== Starting Screen generation ===")
       println("Feature: $featureName")
@@ -45,15 +48,19 @@ class ScreenGenerator(
       // Get packages
       val basePackage = getPackageName(baseDirectory)
       val screenPackage = "$basePackage.$featureFolder"
+      val viewModelPackage = "$basePackage.$featureFolder.viewmodel"
+      val statePackage = "$basePackage.$featureFolder.viewmodel.state"
 
       // Generate Screen file
       val screenContent = generateScreenFile(
          featureClass = featureClass,
          packageName = screenPackage,
+         viewModelPackage = viewModelPackage,
+         statePackage = statePackage,
          hasNavigationBack = hasNavigationBack,
          isTypeSafe = navigationType == NavigationType.TYPE_SAFE,
          navParameters = navParameters,
-         injectViewModel = injectViewModel  // PASS IT HERE
+         injectViewModel = injectViewModel
       )
       createKotlinFile(
          project = project,
@@ -99,10 +106,12 @@ class ScreenGenerator(
    private fun generateScreenFile(
       featureClass: String,
       packageName: String,
+      viewModelPackage: String,
+      statePackage: String,
       hasNavigationBack: Boolean,
       isTypeSafe: Boolean,
       navParameters: List<NavParameter>,
-      injectViewModel: Boolean  // NEW PARAMETER
+      injectViewModel: Boolean
    ): String {
       val sb = StringBuilder()
 
@@ -110,7 +119,12 @@ class ScreenGenerator(
       sb.appendLine()
       sb.appendLine("import androidx.compose.runtime.Composable")
       if (injectViewModel) {
-         sb.appendLine("import org.koin.androidx.compose.koinViewModel")
+         sb.appendLine("import $viewModelPackage.${featureClass}ViewModel")
+         sb.appendLine("import $statePackage.${featureClass}Intent")
+         sb.appendLine("import $statePackage.${featureClass}State")
+         sb.appendLine("import $statePackage.${featureClass}UIState")
+         sb.appendLine("import kotlinx.coroutines.flow.StateFlow")
+         sb.appendLine("import org.koin.compose.viewmodel.koinViewModel")
       }
       sb.appendLine()
 
@@ -118,38 +132,53 @@ class ScreenGenerator(
       sb.appendLine("@Composable")
       sb.append("internal fun ${featureClass}Route(")
 
-      val params = mutableListOf<String>()
+      val routeParams = mutableListOf<String>()
       if (isTypeSafe && navParameters.isNotEmpty()) {
          navParameters.forEach { param ->
-            params.add("${param.name}: ${param.type}")
+            routeParams.add("${param.name}: ${param.type}")
          }
       }
       if (injectViewModel) {
-         params.add("viewModel: ${featureClass}ViewModel = koinViewModel()")
+         routeParams.add("viewModel: ${featureClass}ViewModel = koinViewModel()")
       }
       if (hasNavigationBack) {
-         params.add("navigationBack: () -> Unit")
+         routeParams.add("navigationBack: () -> Unit")
       }
 
-      if (params.isNotEmpty()) {
+      if (routeParams.isNotEmpty()) {
          sb.appendLine()
-         params.forEachIndexed { index, param ->
-            val comma = if (index < params.size - 1) "," else ""
+         routeParams.forEachIndexed { index, param ->
+            val comma = if (index < routeParams.size - 1) "," else ""
             sb.appendLine("    $param$comma")
          }
       }
       sb.appendLine(") {")
       sb.appendLine()
 
-      // Call Screen
+      // Call Screen with extracted flows
       sb.append("    ${featureClass}Screen(")
-      if (params.isNotEmpty()) {
+      if (routeParams.isNotEmpty()) {
          sb.appendLine()
-         params.forEachIndexed { index, param ->
-            val paramName = param.split(":").first().trim().split(" = ").first().trim()
-            val comma = if (index < params.size - 1) "," else ""
-            sb.appendLine("        $paramName = $paramName$comma")
+
+         // Add nav parameters if any
+         if (isTypeSafe && navParameters.isNotEmpty()) {
+            navParameters.forEach { param ->
+               sb.appendLine("        ${param.name} = ${param.name},")
+            }
          }
+
+         // Add ViewModel flows if injected
+         if (injectViewModel) {
+            sb.appendLine("        apiState = viewModel.state,")
+            sb.appendLine("        uiState = viewModel.uiState,")
+            sb.appendLine("        onIntent = viewModel::handleIntent,")
+         }
+
+         // Add navigation back
+         if (hasNavigationBack) {
+            sb.appendLine("        navigationBack = navigationBack")
+         }
+
          sb.append("    ")
       }
       sb.appendLine(")")
@@ -157,14 +186,29 @@ class ScreenGenerator(
       sb.appendLine("}")
       sb.appendLine()
 
-      // Screen function
+      // Screen function - receives flows, not ViewModel
       sb.appendLine("@Composable")
       sb.append("private fun ${featureClass}Screen(")
 
-      if (params.isNotEmpty()) {
+      val screenParams = mutableListOf<String>()
+      if (isTypeSafe && navParameters.isNotEmpty()) {
+         navParameters.forEach { param ->
+            screenParams.add("${param.name}: ${param.type}")
+         }
+      }
+      if (injectViewModel) {
+         screenParams.add("apiState: StateFlow<${featureClass}State>")
+         screenParams.add("uiState: StateFlow<${featureClass}UIState>")
+         screenParams.add("onIntent: (${featureClass}Intent) -> Unit = {}")
+      }
+      if (hasNavigationBack) {
+         screenParams.add("navigationBack: () -> Unit")
+      }
+
+      if (screenParams.isNotEmpty()) {
          sb.appendLine()
-         params.forEachIndexed { index, param ->
-            val comma = if (index < params.size - 1) "," else ""
+         screenParams.forEachIndexed { index, param ->
+            val comma = if (index < screenParams.size - 1) "," else ""
             sb.appendLine("    $param$comma")
          }
       }
@@ -190,9 +234,12 @@ class ScreenGenerator(
       sb.appendLine("import androidx.navigation.NavController")
       sb.appendLine("import androidx.navigation.NavGraphBuilder")
       sb.appendLine("import androidx.navigation.NavOptions")
-      sb.appendLine("import androidx.navigation.compose.composable")
+      sb.appendLine("import ${settings.composableRoutePath}")
       sb.appendLine("import $screenPackage.${featureClass}Route")
       sb.appendLine()
+
+      // Get function name from path
+      val composableRouteName = settings.getClassName(settings.composableRoutePath)
 
       // Route constant
       sb.appendLine("const val $routeConst = \"${featureFolder}_route\"")
@@ -210,7 +257,7 @@ class ScreenGenerator(
          sb.appendLine("    navigationBack: () -> Unit,")
       }
       sb.appendLine(") {")
-      sb.appendLine("    composable($routeConst) {")
+      sb.appendLine("    $composableRouteName($routeConst) {")
       sb.append("        ${featureClass}Route(")
       if (hasNavigationBack) {
          sb.append("navigationBack = navigationBack")
@@ -237,11 +284,13 @@ class ScreenGenerator(
       sb.appendLine("import androidx.navigation.NavController")
       sb.appendLine("import androidx.navigation.NavGraphBuilder")
       sb.appendLine("import androidx.navigation.NavOptions")
-      sb.appendLine("import androidx.navigation.compose.composable")
-      sb.appendLine("import androidx.navigation.toRoute")
+      sb.appendLine("import ${settings.composableSafeTypePath}")
       sb.appendLine("import kotlinx.serialization.Serializable")
       sb.appendLine("import $screenPackage.${featureClass}Route")
       sb.appendLine()
+
+      // Get function name from path
+      val composableSafeTypeName = settings.getClassName(settings.composableSafeTypePath)
 
       // Destination data class
       sb.append("@Serializable")
@@ -262,8 +311,7 @@ class ScreenGenerator(
       if (navParameters.isNotEmpty()) {
          sb.appendLine()
          navParameters.forEachIndexed { index, param ->
-            val comma = if (index < navParameters.size - 1) "," else ""
-            sb.appendLine("    ${param.name}: ${param.type}$comma")
+            sb.appendLine("    ${param.name}: ${param.type},")
          }
          sb.appendLine("    navOptions: NavOptions? = null,")
       } else {
@@ -284,28 +332,28 @@ class ScreenGenerator(
       // NavGraphBuilder extension
       sb.appendLine("fun NavGraphBuilder.${featureFolder}Screen(")
       if (hasNavigationBack) {
-         sb.appendLine("    navigateBack: () -> Unit,")
+         sb.appendLine("    navigationBack: () -> Unit,")
       }
       sb.appendLine(") {")
-      sb.appendLine("    composable<${featureClass}Destination> { backStackEntry ->")
-      if (navParameters.isNotEmpty()) {
-         sb.appendLine("        val args: ${featureClass}Destination = backStackEntry.toRoute()")
-      }
-      sb.append("        ${featureClass}Route(")
+      sb.appendLine()
+      sb.appendLine("    $composableSafeTypeName<${featureClass}Destination>(")
+      sb.appendLine("        content = { args, _ ->")
+      sb.append("            ${featureClass}Route(")
       if (navParameters.isNotEmpty() || hasNavigationBack) {
          sb.appendLine()
          if (navParameters.isNotEmpty()) {
             navParameters.forEach { param ->
-               sb.appendLine("            ${param.name} = args.${param.name},")
+               sb.appendLine("                ${param.name} = args.${param.name},")
             }
          }
          if (hasNavigationBack) {
-            sb.appendLine("            navigateBack = navigateBack,")
+            sb.appendLine("                navigationBack = navigationBack,")
          }
-         sb.append("        ")
+         sb.append("            ")
       }
       sb.appendLine(")")
-      sb.appendLine("    }")
+      sb.appendLine("        }")
+      sb.appendLine("    )")
       sb.appendLine("}")
 
       return sb.toString()

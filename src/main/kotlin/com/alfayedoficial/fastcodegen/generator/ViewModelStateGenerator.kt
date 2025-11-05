@@ -16,6 +16,7 @@ class ViewModelStateGenerator(private val project: Project, private val baseDire
       enableEvents: Boolean,
       enableRefresh: Boolean,
       enableUIState: Boolean,
+      includeLoadMethod: Boolean,
       useCases: List<String>
    ) {
       println("=== Starting generation ===")
@@ -38,11 +39,11 @@ class ViewModelStateGenerator(private val project: Project, private val baseDire
       val viewModelPackage = "$fullPackage.viewmodel"
 
       // Generate State file
-      val stateContent = generateStateFile(featureClass, statePackage, enableEvents, enableRefresh, enableUIState)
+      val stateContent = generateStateFile(featureClass, statePackage, enableEvents, enableRefresh, enableUIState, includeLoadMethod)
       createKotlinFile(project, stateDir, "${featureClass}State.kt", stateContent)
 
       // Generate ViewModel file
-      val viewModelContent = generateViewModelFile(featureClass, viewModelPackage, statePackage, enableEvents, enableRefresh, enableUIState, useCases)
+      val viewModelContent = generateViewModelFile(featureClass, viewModelPackage, statePackage, enableEvents, enableRefresh, enableUIState, includeLoadMethod, useCases)
       createKotlinFile(project, viewModelDir, "${featureClass}ViewModel.kt", viewModelContent)
 
       println("=== Generation complete ===")
@@ -53,7 +54,8 @@ class ViewModelStateGenerator(private val project: Project, private val baseDire
       statePackage: String,
       enableEvents: Boolean,
       enableRefresh: Boolean,
-      enableUIState: Boolean
+      enableUIState: Boolean,
+      includeLoadMethod: Boolean
    ): String {
       val sb = StringBuilder()
 
@@ -87,21 +89,25 @@ class ViewModelStateGenerator(private val project: Project, private val baseDire
       sb.appendLine()
       sb.appendLine("sealed class ${featureClass}State : $baseStateClass {")
       sb.appendLine("    data object Idle : ${featureClass}State()")
-      sb.appendLine("    data object Loading : ${featureClass}State()")
-      sb.appendLine("    data object Success : ${featureClass}State()")
+      if (includeLoadMethod) {
+         sb.appendLine("    data object Loading : ${featureClass}State()")
+         sb.appendLine("    data object Success : ${featureClass}State()")
+      }
       sb.appendLine("    data class Error(val message: String) : ${featureClass}State()")
       sb.appendLine("}")
       sb.appendLine()
 
-      // Event
+      // Event (only if enabled)
       if (enableEvents) {
          sb.appendLine("// ═══════════════════════════════════════════════════════════════")
          sb.appendLine("// Event")
          sb.appendLine("// ═══════════════════════════════════════════════════════════════")
          sb.appendLine()
          sb.appendLine("sealed class ${featureClass}Event : $baseEventClass {")
-         sb.appendLine("    data object Loading : ${featureClass}Event()")
-         sb.appendLine("    data object Success : ${featureClass}Event()")
+         if (includeLoadMethod) {
+            sb.appendLine("    data object Loading : ${featureClass}Event()")
+            sb.appendLine("    data object Success : ${featureClass}Event()")
+         }
          sb.appendLine("    data class Error(val message: String) : ${featureClass}Event()")
          sb.appendLine("}")
          sb.appendLine()
@@ -139,7 +145,9 @@ class ViewModelStateGenerator(private val project: Project, private val baseDire
       sb.appendLine()
       sb.appendLine("sealed class ${featureClass}Intent : $baseIntentClass {")
       sb.appendLine("    data object ClearState : ${featureClass}Intent()")
-      sb.appendLine("    data object Load${featureClass} : ${featureClass}Intent()")
+      if (includeLoadMethod) {
+         sb.appendLine("    data object Load${featureClass} : ${featureClass}Intent()")
+      }
       if (enableRefresh) sb.appendLine("    data object RefreshRequest : ${featureClass}Intent()")
       sb.appendLine("    // TODO: Add your custom intents here")
       sb.appendLine("}")
@@ -154,6 +162,7 @@ class ViewModelStateGenerator(private val project: Project, private val baseDire
       enableEvents: Boolean,
       enableRefresh: Boolean,
       enableUIState: Boolean,
+      includeLoadMethod: Boolean,
       useCases: List<String>
    ): String {
       val sb = StringBuilder()
@@ -167,6 +176,10 @@ class ViewModelStateGenerator(private val project: Project, private val baseDire
       sb.appendLine("import $statePackage.${featureClass}State")
       if (enableEvents) {
          sb.appendLine("import $statePackage.${featureClass}Event")
+      } else {
+         // Import NoEvent from base package
+         val basePackage = settings.baseStatePath.substringBeforeLast(".")
+         sb.appendLine("import $basePackage.NoEvent")
       }
       if (enableUIState) {
          sb.appendLine("import $statePackage.${featureClass}UIState")
@@ -177,7 +190,8 @@ class ViewModelStateGenerator(private val project: Project, private val baseDire
       val appViewModelClass = settings.getClassName(settings.appViewModelPath)
       val viewModelConfigClass = settings.getClassName(settings.viewModelConfigPath)
 
-      val eventType = if (enableEvents) "${featureClass}Event" else "Unit"
+      // Use NoEvent if events are disabled, otherwise use the Event class
+      val eventType = if (enableEvents) "${featureClass}Event" else "NoEvent"
       val uiStateType = if (enableUIState) "${featureClass}UIState" else "Unit"
       val uiStateInit = if (enableUIState) "${featureClass}UIState()" else "Unit"
 
@@ -204,11 +218,21 @@ class ViewModelStateGenerator(private val project: Project, private val baseDire
       sb.appendLine(") {")
       sb.appendLine()
 
+      // init block - auto-call load method if enabled
+      if (includeLoadMethod) {
+         sb.appendLine("    init {")
+         sb.appendLine("        load${featureClass}()")
+         sb.appendLine("    }")
+         sb.appendLine()
+      }
+
       // handleIntent
       sb.appendLine("    override fun handleIntent(intent: ${featureClass}Intent) {")
       sb.appendLine("        when (intent) {")
       sb.appendLine("            is ${featureClass}Intent.ClearState -> setState(${featureClass}State.Idle)")
-      sb.appendLine("            is ${featureClass}Intent.Load${featureClass} -> load${featureClass}()")
+      if (includeLoadMethod) {
+         sb.appendLine("            is ${featureClass}Intent.Load${featureClass} -> load${featureClass}()")
+      }
       if (enableRefresh) sb.appendLine("            is ${featureClass}Intent.RefreshRequest -> refreshRequest { load${featureClass}() }")
       sb.appendLine("        }")
       sb.appendLine("    }")
@@ -219,7 +243,7 @@ class ViewModelStateGenerator(private val project: Project, private val baseDire
       sb.appendLine("        return ${featureClass}State.Error(message)")
       sb.appendLine("    }")
 
-      // createErrorEvent
+      // createErrorEvent - only if events are enabled
       if (enableEvents) {
          sb.appendLine()
          sb.appendLine("    override fun createErrorEvent(message: String): ${featureClass}Event {")
@@ -227,15 +251,17 @@ class ViewModelStateGenerator(private val project: Project, private val baseDire
          sb.appendLine("    }")
       }
 
-      sb.appendLine()
+      // load function - only if includeLoadMethod is true
+      if (includeLoadMethod) {
+         sb.appendLine()
+         sb.appendLine("    private fun load${featureClass}() {")
+         sb.appendLine("        launch {")
+         sb.appendLine("            setState(${featureClass}State.Loading)")
+         sb.appendLine("            // TODO: Implement")
+         sb.appendLine("        }")
+         sb.appendLine("    }")
+      }
 
-      // load function
-      sb.appendLine("    private fun load${featureClass}() {")
-      sb.appendLine("        launch {")
-      sb.appendLine("            setState(${featureClass}State.Loading)")
-      sb.appendLine("            // TODO: Implement")
-      sb.appendLine("        }")
-      sb.appendLine("    }")
       sb.appendLine("}")
 
       return sb.toString()
@@ -263,5 +289,4 @@ class ViewModelStateGenerator(private val project: Project, private val baseDire
       }
       return ""
    }
-
 }

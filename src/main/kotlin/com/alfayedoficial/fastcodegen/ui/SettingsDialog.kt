@@ -2,6 +2,7 @@ package com.alfayedoficial.fastcodegen.ui
 
 import com.alfayedoficial.fastcodegen.settings.FastCodeGenSettings
 import com.intellij.openapi.fileChooser.FileChooser
+import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
@@ -27,6 +28,8 @@ class SettingsDialog(
     private val baseUIStateField = JTextField(settings.baseUIStatePath)
     private val refreshableField = JTextField(settings.refreshablePath)
     private val baseIntentField = JTextField(settings.baseIntentPath)
+    private val composableRouteField = JTextField(settings.composableRoutePath)
+    private val composableSafeTypeField = JTextField(settings.composableSafeTypePath)
     private val koinModuleField = JTextField(settings.koinModulePath)
 
     init {
@@ -79,6 +82,15 @@ class SettingsDialog(
 
         scrollContent.add(Box.createVerticalStrut(15))
 
+        // Navigation Utilities Section
+        addSection(scrollContent, "Navigation Utilities (Required)")
+        addPathFieldWithBrowse(scrollContent, "composableRoute:", composableRouteField,
+            "Full path to your composableRoute function for simple navigation")
+        addPathFieldWithBrowse(scrollContent, "composableSafeType:", composableSafeTypeField,
+            "Full path to your composableSafeType function for type-safe navigation")
+
+        scrollContent.add(Box.createVerticalStrut(15))
+
         // Koin Module Section
         addSection(scrollContent, "Dependency Injection (Optional)")
         addPathFieldWithBrowse(scrollContent, "Koin Module:", koinModuleField,
@@ -96,6 +108,7 @@ class SettingsDialog(
                 "<b>Example:</b><br/>" +
                 "• com.myapp.core.viewmodel.AppViewModel<br/>" +
                 "• com.myapp.core.viewmodel.BaseState<br/>" +
+                "• com.myapp.core.utilities.composableRoute<br/>" +
                 "• org.koin.core.module.Module (for Koin)" +
                 "</html>")
         examplePanel.add(exampleLabel, BorderLayout.CENTER)
@@ -103,7 +116,7 @@ class SettingsDialog(
         scrollContent.add(examplePanel)
 
         val scrollPane = JScrollPane(scrollContent)
-        scrollPane.preferredSize = Dimension(700, 550)
+        scrollPane.preferredSize = Dimension(700, 600)
         scrollPane.border = null
         mainPanel.add(scrollPane, BorderLayout.CENTER)
 
@@ -124,7 +137,7 @@ class SettingsDialog(
         panel.maximumSize = Dimension(Integer.MAX_VALUE, 30)
 
         val labelComponent = JLabel(label)
-        labelComponent.preferredSize = Dimension(150, 25)
+        labelComponent.preferredSize = Dimension(180, 25)
         panel.add(labelComponent, BorderLayout.WEST)
 
         field.toolTipText = tooltip
@@ -144,7 +157,15 @@ class SettingsDialog(
     }
 
     private fun browseForClass(field: JTextField) {
-        val descriptor = FileChooserDescriptorFactory.createSingleFileDescriptor()
+        // ✅ Fixed: Use FileChooserDescriptor constructor instead of deprecated method
+        val descriptor = FileChooserDescriptor(
+            true,   // chooseFiles
+            false,  // chooseFolders
+            false,  // chooseJars
+            false,  // chooseJarsAsFiles
+            false,  // chooseJarContents
+            false   // chooseMultiple
+        )
             .withFileFilter { it.extension == "kt" || it.extension == "java" }
             .withTitle("Select Base Class File")
             .withDescription("Select the Kotlin or Java file containing the base class")
@@ -189,6 +210,8 @@ class SettingsDialog(
         settings.baseUIStatePath = baseUIStateField.text.trim()
         settings.refreshablePath = refreshableField.text.trim()
         settings.baseIntentPath = baseIntentField.text.trim()
+        settings.composableRoutePath = composableRouteField.text.trim()
+        settings.composableSafeTypePath = composableSafeTypeField.text.trim()
         settings.koinModulePath = koinModuleField.text.trim()
 
         super.doOKAction()

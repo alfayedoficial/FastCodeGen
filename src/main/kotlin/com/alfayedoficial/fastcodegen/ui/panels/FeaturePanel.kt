@@ -28,6 +28,7 @@ class FeaturePanel(
     val eventsCheckBox: JCheckBox = JCheckBox(UIConstants.ENABLE_EVENTS_LABEL, true),
     val refreshCheckBox: JCheckBox = JCheckBox(UIConstants.ENABLE_REFRESH_LABEL, true),
     val uiStateCheckBox: JCheckBox = JCheckBox(UIConstants.ENABLE_UISTATE_LABEL, true),
+    val includeLoadMethodCheckBox: JCheckBox = JCheckBox(UIConstants.INCLUDE_LOAD_METHOD_LABEL, false),
     val useCasesField: JTextField = JTextField(),
     // Repository components
     val httpClientCheckBox: JCheckBox = JCheckBox(UIConstants.NEEDS_HTTP_CLIENT_LABEL, true),
@@ -83,6 +84,7 @@ class FeaturePanel(
         eventsCheckBox.toolTipText = UIConstants.EVENTS_TOOLTIP
         refreshCheckBox.toolTipText = UIConstants.REFRESH_TOOLTIP
         uiStateCheckBox.toolTipText = UIConstants.UISTATE_TOOLTIP
+        includeLoadMethodCheckBox.toolTipText = UIConstants.INCLUDE_LOADING_METHOD_TOOLTIP
         useCasesField.preferredSize = UIConstants.TEXT_FIELD_SIZE
         useCasesField.toolTipText = UIConstants.USE_CASES_TOOLTIP
 
@@ -173,9 +175,11 @@ class FeaturePanel(
         eventsCheckBox.alignmentX = JComponent.LEFT_ALIGNMENT
         refreshCheckBox.alignmentX = JComponent.LEFT_ALIGNMENT
         uiStateCheckBox.alignmentX = JComponent.LEFT_ALIGNMENT
+        includeLoadMethodCheckBox.alignmentX = JComponent.LEFT_ALIGNMENT
         vmSection.add(eventsCheckBox)
         vmSection.add(refreshCheckBox)
         vmSection.add(uiStateCheckBox)
+        vmSection.add(includeLoadMethodCheckBox)
         vmSection.add(Box.createVerticalStrut(UIConstants.SMALL_SPACING))
 
         val useCasesLabel = JLabel(UIConstants.USE_CASES_LABEL + UIConstants.OPTIONAL_SUFFIX)
@@ -349,6 +353,7 @@ class FeaturePanel(
     fun isEventsEnabled(): Boolean = eventsCheckBox.isSelected
     fun isRefreshEnabled(): Boolean = refreshCheckBox.isSelected
     fun isUiStateEnabled(): Boolean = uiStateCheckBox.isSelected
+    fun isIncludeLoadMethod(): Boolean = includeLoadMethodCheckBox.isSelected
     fun getUseCases(): List<String> = useCasesField.text.split(",").map { it.trim() }.filter { it.isNotEmpty() }
 
     // Repository Configuration

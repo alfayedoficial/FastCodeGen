@@ -15,6 +15,7 @@ class FeatureGenerator(
         enableEvents: Boolean,
         enableRefresh: Boolean,
         enableUIState: Boolean,
+        includeLoadMethod: Boolean,
         useCases: List<String>,
         // Repo config
         generateRepository: Boolean = true,
@@ -46,7 +47,7 @@ class FeatureGenerator(
         if (generateViewModel) {
             println("Generating ViewModel State...")
             val viewModelGenerator = ViewModelStateGenerator(project, baseDirectory)
-            viewModelGenerator.generate(featureName, enableEvents, enableRefresh, enableUIState, useCases)
+            viewModelGenerator.generate(featureName, enableEvents, enableRefresh, enableUIState, includeLoadMethod,useCases)
         }
 
         // Generate Repository

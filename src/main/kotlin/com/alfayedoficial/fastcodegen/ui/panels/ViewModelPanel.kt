@@ -12,10 +12,11 @@ class ViewModelPanel(
     val eventsCheckBox: JCheckBox = JCheckBox("Enable Events", true),
     val refreshCheckBox: JCheckBox = JCheckBox("Enable Refresh", true),
     val uiStateCheckBox: JCheckBox = JCheckBox("Enable UIState", true),
+    val includeLoadMethodCheckBox: JCheckBox = JCheckBox("include Load Method", false),
     val useCasesField: JTextField = JTextField(),
     private val onBack: () -> Unit
 ) {
-    
+
     init {
         setupComponents()
     }
@@ -26,6 +27,7 @@ class ViewModelPanel(
         eventsCheckBox.toolTipText = UIConstants.EVENTS_TOOLTIP
         refreshCheckBox.toolTipText = UIConstants.REFRESH_TOOLTIP
         uiStateCheckBox.toolTipText = UIConstants.UISTATE_TOOLTIP
+        includeLoadMethodCheckBox.toolTipText = UIConstants.INCLUDE_LOADING_METHOD_TOOLTIP
         useCasesField.preferredSize = UIConstants.TEXT_FIELD_SIZE
         useCasesField.toolTipText = UIConstants.USE_CASES_TOOLTIP
     }
@@ -46,7 +48,8 @@ class ViewModelPanel(
         PanelFactory.addSection(panel, UIConstants.CONFIGURATION_LABEL, listOf(
             eventsCheckBox,
             refreshCheckBox,
-            uiStateCheckBox
+            uiStateCheckBox,
+            includeLoadMethodCheckBox
         ))
 
         panel.add(Box.createVerticalStrut(UIConstants.MEDIUM_SPACING))
@@ -70,5 +73,6 @@ class ViewModelPanel(
     fun isEventsEnabled(): Boolean = eventsCheckBox.isSelected
     fun isRefreshEnabled(): Boolean = refreshCheckBox.isSelected
     fun isUiStateEnabled(): Boolean = uiStateCheckBox.isSelected
+    fun isIncludeLoadMethod(): Boolean = includeLoadMethodCheckBox.isSelected
     fun getUseCases(): List<String> = useCasesField.text.split(",").map { it.trim() }.filter { it.isNotEmpty() }
 }

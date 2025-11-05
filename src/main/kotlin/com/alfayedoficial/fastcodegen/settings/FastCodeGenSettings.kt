@@ -27,6 +27,10 @@ class FastCodeGenSettings : PersistentStateComponent<FastCodeGenSettings> {
     var refreshablePath: String = "com.afapps.core.viewmodel.Refreshable"
     var baseIntentPath: String = "com.afapps.core.viewmodel.BaseIntent"
 
+    // Navigation utility paths
+    var composableRoutePath: String = "com.afapps.core.utilities.composableRoute"
+    var composableSafeTypePath: String = "com.afapps.core.utilities.composableSafeType"
+
     // Koin Module path (optional)
     var koinModulePath: String = ""
 
@@ -52,7 +56,9 @@ class FastCodeGenSettings : PersistentStateComponent<FastCodeGenSettings> {
                 baseEventPath.isNotBlank() &&
                 baseUIStatePath.isNotBlank() &&
                 refreshablePath.isNotBlank() &&
-                baseIntentPath.isNotBlank()
+                baseIntentPath.isNotBlank() &&
+                composableRoutePath.isNotBlank() &&
+                composableSafeTypePath.isNotBlank()
     }
 
     /**
@@ -68,6 +74,8 @@ class FastCodeGenSettings : PersistentStateComponent<FastCodeGenSettings> {
         if (baseUIStatePath.isBlank()) missing.add("BaseUIState path")
         if (refreshablePath.isBlank()) missing.add("Refreshable path")
         if (baseIntentPath.isBlank()) missing.add("BaseIntent path")
+        if (composableRoutePath.isBlank()) missing.add("composableRoute path")
+        if (composableSafeTypePath.isBlank()) missing.add("composableSafeType path")
 
         return if (missing.isEmpty()) {
             ""

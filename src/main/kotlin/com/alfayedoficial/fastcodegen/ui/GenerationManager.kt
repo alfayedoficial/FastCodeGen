@@ -40,6 +40,7 @@ class GenerationManager(
         enableEvents: Boolean,
         enableRefresh: Boolean,
         enableUIState: Boolean,
+        includeLoadMethod: Boolean,
         useCases: List<String>
     ): Boolean {
         return executeGeneration("ViewModel State", featureName) {
@@ -48,6 +49,7 @@ class GenerationManager(
                 enableEvents,
                 enableRefresh,
                 enableUIState,
+                includeLoadMethod,
                 useCases
             )
         }
@@ -72,6 +74,7 @@ class GenerationManager(
         enableEvents: Boolean,
         enableRefresh: Boolean,
         enableUIState: Boolean,
+        includeLoadMethod: Boolean,
         useCases: List<String>,
         methods: List<RepoGenerator.RepoMethod>,
         needsHttpClient: Boolean,
@@ -89,6 +92,7 @@ class GenerationManager(
                 enableEvents,
                 enableRefresh,
                 enableUIState,
+                includeLoadMethod,
                 useCases,
                 generateRepository,
                 methods,
